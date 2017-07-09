@@ -1,4 +1,4 @@
-files.wd		= '/Users/MEAS/GitHub/nuclear-map'
+files.wd		= '/Users/MEAS/GitHub/nuclear-map/data'
 nuc.file 		= 'nucgenlist.csv'
 plants.file 	= 'allplants.csv'
 
