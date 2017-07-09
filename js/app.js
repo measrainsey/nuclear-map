@@ -175,21 +175,27 @@ $('#timeline ul li a').live('mouseout', function(e){
 
 function createCartodbLayers() {
 
+//    var baseLayerDef = {
+//      sql: "SELECT * FROM rolling_basemap",
+//      cartocss: "#rolling_basemap { polygon-fill:#333333; polygon-opacity: 0.7; line-opacity:1; line-color: #000; line-width: .3; [feature='Urban Area']{ polygon-fill:#000; polygon-opacity:0; line-width: 0; } }"
+//    };
+
+//    var pointsLayerDef = {
+//      sql: "SELECT *, date as date_proc, ST_asGeoJson(the_geom) as geom FROM rolling_stones",
+//      cartocss: "#rolling_stones::oth { marker-fill: #000; marker-opacity: .3; marker-width: 17; marker-allow-overlap: true; } #rolling_stones { marker-fill: #FFF; marker-opacity: 1; marker-width: 5; marker-line-width: 0; marker-placement: point; marker-type: ellipse; marker-allow-overlap: true; }",
+//      interactivity: 'geom,city,cartodb_id,date_proc'
+//    };
+//
+//    var linesLayerDef = {
+//      sql: "select * from rolling_stones_tours",
+//      cartocss: "#rolling_stones_tours{ line-width: 0; line-color: #FFF; line-opacity: 0.8; }",
+//    };
+    
     var baseLayerDef = {
       sql: "SELECT * FROM rolling_basemap",
       cartocss: "#rolling_basemap { polygon-fill:#333333; polygon-opacity: 0.7; line-opacity:1; line-color: #000; line-width: .3; [feature='Urban Area']{ polygon-fill:#000; polygon-opacity:0; line-width: 0; } }"
     };
-
-    var pointsLayerDef = {
-      sql: "SELECT *, date as date_proc, ST_asGeoJson(the_geom) as geom FROM rolling_stones",
-      cartocss: "#rolling_stones::oth { marker-fill: #000; marker-opacity: .3; marker-width: 17; marker-allow-overlap: true; } #rolling_stones { marker-fill: #FFF; marker-opacity: 1; marker-width: 5; marker-line-width: 0; marker-placement: point; marker-type: ellipse; marker-allow-overlap: true; }",
-      interactivity: 'geom,city,cartodb_id,date_proc'
-    };
-
-    var linesLayerDef = {
-      sql: "select * from rolling_stones_tours",
-      cartocss: "#rolling_stones_tours{ line-width: 1; line-color: #FFF; line-opacity: 0.8; }",
-    };
+    
 
     cartodb.createLayer(map, {
       user_name: 'saleiva',
