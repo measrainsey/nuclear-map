@@ -10,9 +10,12 @@ nuclist = fread(nuc.file, header = TRUE)
 nuclist = nuclist[, c("plant_code", "nameplate_capacity", "status", "operating_year", "retirement_year"), with = FALSE]
 
 nuclist = nuclist[, plant_capacity := sum(nameplate_capacity), by = plant_code]
-nuclist = nuclist[, c("plant_code", "plant_capacity"), with = FALSE]
+nuclist = nuclist[, operating_year := min(operating_year), by = plant_code]
+nuclist = nuclist[, retirement_year := min(retirement_year), by = plant_code]
+nuclist = nuclist[, c("plant_code", "plant_capacity", "operating_year", "retirement_year"), with = FALSE]
 
-nucplants = na.omit(unique(nuclist))
+nucplants = unique(nuclist)
+nucplants = nucplants[ !(plant_code == "NA") ]
 
 plantlist = fread(plants.file, header = TRUE)
 
