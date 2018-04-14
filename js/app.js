@@ -31,32 +31,8 @@ var map = L.map('map', {zoomControl:false}).setView([51.998410382390325, -1.3842
 createCartodbLayers();
 
 // Add needed slides with their contents
-//$.ajax({
-//  url: "http://saleiva.cartodb.com/api/v2/sql?q=select%20cdb_id,%20tour_length,%20shortname,%20year,%20description%20from%20rolling_stones_tours%20order%20by%20first_concert_date%20asc"
-//})
-//.done(function (data) {
-//    try{
-//       data = JSON.parse(data);
-//    }catch(err){}
-//    for(var i in data.rows){
-//        var nextSlide = parseInt(i)+1;
-//        var tourL = parseInt(data.rows[i].tour_length).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-//        $('.slides').append('<section class="tour">'+
-//                '<div class="content">'+
-//                    '<h2 class="year">'+data.rows[i].year+'</h2>'+
-//                    '<h2 class="title" tour-id="'+parseInt(data.rows[i].cdb_id,10)+'">'+data.rows[i].shortname+'</h2>'+
-//                    '<h2 class="description">'+data.rows[i].description+'</h2>'+
-//                    '<p class="km">'+tourL+'km.</p>'+
-//                '</div>'+
-//                '<div class="nextButton"><a href="#" actual-slide="'+nextSlide+'"> </a></div>'+
-//            '</section>'
-//        );
-//        tour_indexes.push(parseInt(data.rows[i].cdb_id,10));
-//    }
-//});
-
 $.ajax({
-  url: "https://mmeng.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20nuctimeline"
+  url: "http://saleiva.cartodb.com/api/v2/sql?q=select%20cdb_id,%20tour_length,%20shortname,%20year,%20description%20from%20rolling_stones_tours%20order%20by%20first_concert_date%20asc"
 })
 .done(function (data) {
     try{
@@ -68,9 +44,9 @@ $.ajax({
         $('.slides').append('<section class="tour">'+
                 '<div class="content">'+
                     '<h2 class="year">'+data.rows[i].year+'</h2>'+
-                    '<h2 class="title" tour-id="'+parseInt(data.rows[i].time_id,10)+'">'+data.rows[i].ncount+' Plants Added</h2>'+
-                    '<h2 class="description">'+data.rows[i].notes+'</h2>'+
-//                    '<p class="km">'+tourL+'km.</p>'+
+                    '<h2 class="title" tour-id="'+parseInt(data.rows[i].cdb_id,10)+'">'+data.rows[i].shortname+'</h2>'+
+                    '<h2 class="description">'+data.rows[i].description+'</h2>'+
+                    '<p class="km">'+tourL+'km.</p>'+
                 '</div>'+
                 '<div class="nextButton"><a href="#" actual-slide="'+nextSlide+'"> </a></div>'+
             '</section>'
@@ -78,7 +54,6 @@ $.ajax({
         tour_indexes.push(parseInt(data.rows[i].cdb_id,10));
     }
 });
-
 
 // Binds event to the next buttons on each slide
 $('.nextButton a').live('click', function(e){
@@ -90,7 +65,7 @@ $('.nextButton a').live('click', function(e){
 
 //Creates the timeline
 $.ajax({
-  url: "https://mmeng.carto.com/api/v2/sql?q=SELECT%20*%20FROM%20nuctimeline",
+  url: "http://saleiva.cartodb.com/api/v2/sql?q=SELECT%20MIN(cdb_id)%20as%20tour_id,year%20FROM%20rolling_stones_tours%20GROUP%20BY%20year%20ORDER%20BY%20year%20ASC",
 })
 .done(function (data){
 	try{
@@ -99,7 +74,7 @@ $.ajax({
 	$('#timeline ul').append('<li><span id="firstYear">'+data.rows[0].year+'</span></li>');
 	for(var i in data.rows){
 		$('#timeline ul').append('<li>'+
-				'<a href="#" year-data="'+parseInt(data.rows[i].year)+'" go-to-data="'+parseInt(data.rows[i].time_id,10)+'"> </a>'+
+				'<a href="#" year-data="'+parseInt(data.rows[i].year)+'" go-to-data="'+parseInt(data.rows[i].tour_id,10)+'"> </a>'+
 			'</li>'
 		);
 	};
@@ -112,30 +87,6 @@ $('#timeline ul li a').live('click', function(e){
     e.preventDefault();
     return false;
 });
-
-//$.ajax({
-//  url: "http://saleiva.cartodb.com/api/v2/sql?q=SELECT%20MIN(cdb_id)%20as%20tour_id,year%20FROM%20rolling_stones_tours%20GROUP%20BY%20year%20ORDER%20BY%20year%20ASC",
-//})
-//.done(function (data){
-//	try{
-//	   data = JSON.parse(data);
-//	}catch(err){}
-//	$('#timeline ul').append('<li><span id="firstYear">'+data.rows[0].year+'</span></li>');
-//	for(var i in data.rows){
-//		$('#timeline ul').append('<li>'+
-//				'<a href="#" year-data="'+parseInt(data.rows[i].year)+'" go-to-data="'+parseInt(data.rows[i].tour_id,10)+'"> </a>'+
-//			'</li>'
-//		);
-//	};
-//	$('#timeline ul').append('<li><span id="lastYear">'+data.rows[data.rows.length-1].year+'</span></li>');
-//});
-//
-//$('#timeline ul li a').live('click', function(e){
-//    var goto = parseInt($(e.target).attr('go-to-data'));
-//    Reveal.slide(searchTour(goto),0)
-//    e.preventDefault();
-//    return false;
-//});
 
 $('#timeline ul li a').live('mouseover', function(e){
     
@@ -175,27 +126,21 @@ $('#timeline ul li a').live('mouseout', function(e){
 
 function createCartodbLayers() {
 
-//    var baseLayerDef = {
-//      sql: "SELECT * FROM rolling_basemap",
-//      cartocss: "#rolling_basemap { polygon-fill:#333333; polygon-opacity: 0.7; line-opacity:1; line-color: #000; line-width: .3; [feature='Urban Area']{ polygon-fill:#000; polygon-opacity:0; line-width: 0; } }"
-//    };
-
-//    var pointsLayerDef = {
-//      sql: "SELECT *, date as date_proc, ST_asGeoJson(the_geom) as geom FROM rolling_stones",
-//      cartocss: "#rolling_stones::oth { marker-fill: #000; marker-opacity: .3; marker-width: 17; marker-allow-overlap: true; } #rolling_stones { marker-fill: #FFF; marker-opacity: 1; marker-width: 5; marker-line-width: 0; marker-placement: point; marker-type: ellipse; marker-allow-overlap: true; }",
-//      interactivity: 'geom,city,cartodb_id,date_proc'
-//    };
-//
-//    var linesLayerDef = {
-//      sql: "select * from rolling_stones_tours",
-//      cartocss: "#rolling_stones_tours{ line-width: 0; line-color: #FFF; line-opacity: 0.8; }",
-//    };
-    
     var baseLayerDef = {
       sql: "SELECT * FROM rolling_basemap",
       cartocss: "#rolling_basemap { polygon-fill:#333333; polygon-opacity: 0.7; line-opacity:1; line-color: #000; line-width: .3; [feature='Urban Area']{ polygon-fill:#000; polygon-opacity:0; line-width: 0; } }"
     };
-    
+
+    var pointsLayerDef = {
+      sql: "SELECT *, date as date_proc, ST_asGeoJson(the_geom) as geom FROM rolling_stones",
+      cartocss: "#rolling_stones::oth { marker-fill: #000; marker-opacity: .3; marker-width: 17; marker-allow-overlap: true; } #rolling_stones { marker-fill: #FFF; marker-opacity: 1; marker-width: 5; marker-line-width: 0; marker-placement: point; marker-type: ellipse; marker-allow-overlap: true; }",
+      interactivity: 'geom,city,cartodb_id,date_proc'
+    };
+
+    var linesLayerDef = {
+      sql: "select * from rolling_stones_tours",
+      cartocss: "#rolling_stones_tours{ line-width: 1; line-color: #FFF; line-opacity: 0.8; }",
+    };
 
     cartodb.createLayer(map, {
       user_name: 'saleiva',

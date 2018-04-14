@@ -98,7 +98,7 @@ section.landing h1{
 
 section.landing h1 strong{
 	font-family: 'heroregular';
-	color: #034748;	
+	color: #FF0000;	
 	font-weight: normal;
 }
 
@@ -277,7 +277,7 @@ div#cursorsThumbnail{
 /*SECTIONS*/
 
 section.landing{
-	background: url(../img/plant1.jpg) no-repeat center center; 
+	background: url(../img/landingBkg.jpg) no-repeat center center; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
