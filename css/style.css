@@ -98,7 +98,7 @@ section.landing h1{
 
 section.landing h1 strong{
 	font-family: 'heroregular';
-	color: #FF0000;	
+	color: #23967F;	
 	font-weight: normal;
 }
 
@@ -277,7 +277,7 @@ div#cursorsThumbnail{
 /*SECTIONS*/
 
 section.landing{
-	background: url(../img/landingBkg.jpg) no-repeat center center; 
+	background: url(../img/frederic-paulussen-548445-unsplash.jpg) no-repeat center center; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
