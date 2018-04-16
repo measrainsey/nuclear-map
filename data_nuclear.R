@@ -13,6 +13,9 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   library(lubridate)
   library(openxlsx)
   library(stringr)
+  library(readr)
+  library(jsonlite)
+
 
 # load current generators ------
   
@@ -30,7 +33,9 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     ncols = colnames(cur_ret)[4:8]
     cur_ret[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
     colnames(cur_ret) = c("plant_code", "gen_id", "technology", "capacity", "op_month", "op_year", "ret_month", "ret_year")
+    past_op = cur_ret[, c("plant_code", "capacity", "op_year")]
     cur_ret = cur_ret[, c("plant_code", "capacity", "ret_year")]
+    past_op = past_op[!is.na(op_year)]
     cur_ret = cur_ret[!is.na(ret_year)]
   
   plan_ret = cur_op[ !is.na(ret_year), c("plant_code", "gen_id", "technology", "capacity","ret_year")]
@@ -40,6 +45,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   
   colnames(cur_op) = c("plant_code", "capacity", "year")
   colnames(cur_ret) = c("plant_code", "capacity", "year")
+  colnames(past_op) = c("plant_code", "capacity", "year")
   colnames(plan_ret) = c("plant_code", "capacity", "year")
 
   # cur_prop = as.data.table(read.xlsx(gen.fil, sheet = "Proposed", startRow = 2, cols = c(3,7:8,16,21:24)))[ Technology == "Nuclear"]
@@ -69,7 +75,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   
 # all generators together -----
   
-  dt_all = rbindlist(list(cur_op, cur_ret, plan_ret, plan_prop))
+  dt_all = rbindlist(list(cur_op, cur_ret, plan_ret, plan_prop, past_op))
   dt_all[, (2:3) := lapply(.SD, as.numeric), .SDcols = 2:3 ]
   dt_all = dt_all[, lapply(.SD, sum), by = c("plant_code", "year")]
   
@@ -80,6 +86,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 # save files ------
   
   setwd(out.dir)
+  
+  # dt_1986 %>% 
+  #   toJSON()
+  # 
+  # json_1986 = toJSON(dt_1986)
+  # write(json_1986, "nuc1986.json")
   
   fwrite(dt_all, "dt_all.csv", row.names = FALSE)
   fwrite(dt_1986, "dt_1986.csv", row.names = FALSE)
