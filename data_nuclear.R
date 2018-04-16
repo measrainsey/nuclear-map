@@ -13,9 +13,6 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   library(lubridate)
   library(openxlsx)
   library(stringr)
-  library(readr)
-  library(jsonlite)
-
 
 # load current generators ------
   
@@ -83,16 +80,15 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   
   dt_1986 = dt_all[ year == "1986"]
   
+  dt_long = dcast(dt_all, plant_code + plant_name + city + state + latitude + longitude ~ year, value.var = "capacity")
+  
+  
 # save files ------
   
   setwd(out.dir)
   
-  # dt_1986 %>% 
-  #   toJSON()
-  # 
-  # json_1986 = toJSON(dt_1986)
-  # write(json_1986, "nuc1986.json")
-  
+
+  fwrite(dt_all, "dt_all.csv", row.names = FALSE)
   fwrite(dt_all, "dt_all.csv", row.names = FALSE)
   fwrite(dt_1986, "dt_1986.csv", row.names = FALSE)
   
