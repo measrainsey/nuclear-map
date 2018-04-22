@@ -13,27 +13,30 @@ body {
   stroke: #fff;
 }
 
-    
 .symbol{
     fill: steelblue;
-    stroke: #fff;
-    opacity: .65;
+    stroke: steelblue;
+    opacity: 0.7;
 }
     
 .symbol:hover {
-    fill-opacity: .75;
-    stroke: #000;
+    fill-opacity: 1;
     stroke-width: 1px;
 }
 
 .symbol--gain{
   fill: #67a9cf;
-  stroke: #fff;
+  stroke: #67a9cf;
+  fill-opacity: .65;
+  stroke-opacity: 1;
 }
 .symbol--loss{
-  fill: #ef8a62;
-  stroke: #fff;
+    fill: #ef8a62;
+    stroke: #ef8a62;   
+    fill-opacity: .65;
+    stroke-opacity: 1;
 }
+
 
 div.tooltip {   
  	position: absolute;   
@@ -65,13 +68,6 @@ div.tooltip {
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
-<!--<div id="slider" style="width: 200px;"></div>-->
-<!--
-<div id="sliderContainer">
-    <input id="timeslide" type="range" min="0" max="58" value="0" step="1"/><br>
-    <span id="range">1969</span>
-</div>
--->
 
 <script>
 
@@ -96,7 +92,6 @@ var div = d3.select("body")
     		.style("opacity", 0);
 
 var projection = d3.geo.albersUsa();
-    
 
 
 queue()
@@ -138,6 +133,7 @@ function ready(error, us, data) {
            .duration(500)      
            .style("opacity", 0);   
         });
+        
     }
 
 
