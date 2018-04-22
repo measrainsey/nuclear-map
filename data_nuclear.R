@@ -1,6 +1,8 @@
-gen.dir   = '/Users/MEAS/Google Drive/data/eia/860/eia8602016'
-gen.fil   = '3_1_Generator_Y2016.xlsx'
-plant.fil = '2___Plant_Y2016.xlsx'
+eia.dir   = '/Users/MEAS/Google Drive/data/eia/860/eia860'
+gen.fil   = c('GeneratorY2011.xlsx', 'GeneratorY2012.xlsx', '3_1_Generator_Y2013.xlsx', 
+              '3_1_Generator_Y2014.xlsx', '3_1_Generator_Y2015.xlsx', '3_1_Generator_Y2016.xlsx')
+plt.fil   = c('Plant.xlsx', 'PlantY2012.xlsx', '2___Plant_Y2013.xlsx', 
+              '2___Plant_Y2014.xlsx', '2___Plant_Y2015.xlsx', '2___Plant_Y2016.xlsx')
 add.dir   = '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/february2018'
 add.fil   = 'Table_6_05.xlsx'
 out.dir   = '/Users/MEAS/GitHub/nuclear-map'
@@ -9,85 +11,182 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # load libraries ------
 
-  library(data.table)
-  library(lubridate)
-  library(openxlsx)
-  library(stringr)
+library(data.table)
+library(lubridate)
+library(openxlsx)
+library(stringr)
 
-# load current generators ------
+# list of years -------
+  years = 2011:2016
+
+# read in operating generators -------
+
+  list_cols = list(c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,15,25:28,33),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34)
+  )
   
-  setwd(gen.dir)
-
-
-  cur_op = as.data.table(read.xlsx(gen.fil, sheet = "Operable", startRow = 2, rows = 2:20726, 
-                                   cols = c(3,7:8,16,26:29)))[ Technology == "Nuclear"]
-    ncols = colnames(cur_op)[4:8]
-    cur_op[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
-    colnames(cur_op) = c("plant_code", "gen_id", "technology", "capacity", "op_month", "op_year", "ret_month", "ret_year")
+  list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "ret_month", "ret_year"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "ret_month", "ret_year"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
+  
+  ncols = c("capacity", "op_month", "op_year", "ret_month", "ret_year")
+  
+  list_op = list()
+  
+  for (i in seq_along(years)) {
+    setwd(paste0(eia.dir, years[i]))
     
-  cur_ret = as.data.table(read.xlsx(gen.fil, sheet = "Retired and Canceled",
-                                    startRow = 2, cols = c(3,7:8,16,26:29)))[ Technology == "Nuclear"]
-    ncols = colnames(cur_ret)[4:8]
-    cur_ret[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
-    colnames(cur_ret) = c("plant_code", "gen_id", "technology", "capacity", "op_month", "op_year", "ret_month", "ret_year")
-    past_op = cur_ret[, c("plant_code", "capacity", "op_year")]
-    cur_ret = cur_ret[, c("plant_code", "capacity", "ret_year")]
-    past_op = past_op[!is.na(op_year)]
-    cur_ret = cur_ret[!is.na(ret_year)]
+    gen.temp = as.data.table(read.xlsx(gen.fil[i], 
+                                       colNames = TRUE, 
+                                       startRow = 2,
+                                       cols = list_cols[[i]]))
+    
+    colnames(gen.temp) = list_names[[i]]
+    
+    gen.temp = gen.temp[ energy_source == "NUC" ]
+    
+    gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    
+    list_op[[i]] = gen.temp
+    
+    setcolorder(gen.temp, 
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
+    
+    rm(gen.temp)
+    
+  }
   
-  plan_ret = cur_op[ !is.na(ret_year), c("plant_code", "gen_id", "technology", "capacity","ret_year")]
-  # cur_op = cur_op[!plan_ret, on = c("plant_code", "gen_id"), 
-  #                 c("plant_code", "capacity", "op_year")]
-  plan_ret = plan_ret[, c("plant_code", "capacity","ret_year")]
-  
-  colnames(cur_op) = c("plant_code", "capacity", "year")
-  colnames(cur_ret) = c("plant_code", "capacity", "year")
-  colnames(past_op) = c("plant_code", "capacity", "year")
-  colnames(plan_ret) = c("plant_code", "capacity", "year")
+  op_all = rbindlist(list_op)
 
-  # cur_prop = as.data.table(read.xlsx(gen.fil, sheet = "Proposed", startRow = 2, cols = c(3,7:8,16,21:24)))[ Technology == "Nuclear"]
-  # 
-  #   ncols = colnames(cur_prop)[4:8]
-  #   cur_prop[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+
+# read in retired generators -------
+
+  list_cols = list(c(3:4,7,10,14:18),
+                   c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,15,25:28,33),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34)
+  )
   
+  list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "ret_month", "ret_year"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
+  
+  ncols = c("capacity", "op_month", "op_year", "ret_month", "ret_year")
+  
+  list_ret = list()
+  
+  
+  for (i in seq_along(years)) {
+    setwd(paste0(eia.dir, years[i]))
+    
+    gen.temp = as.data.table(read.xlsx(gen.fil[i], 
+                                       sheet = 3,
+                                       colNames = TRUE, 
+                                       startRow = 2,
+                                       cols = list_cols[[i]]))
+    
+    colnames(gen.temp) = list_names[[i]]
+    
+    gen.temp = gen.temp[ energy_source == "NUC" ]
+    
+    gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    
+    list_ret[[i]] = gen.temp
+    
+    setcolorder(gen.temp, 
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
+    
+    rm(gen.temp)
+    
+  }
+  
+  ret_2016 = rbindlist(list_ret)
+  ret_2016 = unique(ret_2016)
+
+# filter out retirements up to 2018 ------
+
+  ret_2018 = op_all[ ret_year <= 2018 ]
+  
+  ret_current = rbindlist(list(ret_2016, ret_2018))
+  ret_current = unique(ret_current)
+  
+# remove retired generators from operating generators -----
+
+  op_current = op_all[!ret_2018, on = c("plant_code", "gen_id")]
+
+# filter out planned retirements ------
+
+  ret_planned = op_all[ ret_year > 2018 ]
+
+# add planned installments (up to 2016) ------
+
+  list_cols = list(c(3:4,7,10,14:15,18),
+                   c(3:4,7,10,14:15,18),
+                   c(3:4,7,16,21:22,28),
+                   c(3:4,7,16,21:22,29),
+                   c(3:4,7,16,21:22,29),
+                   c(3:4,7,16,21:22,29)
+  )
+  
+  list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_year", "op_month", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
+                    c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"))
+  
+  ncols = c("capacity", "op_month", "op_year")
+  
+  list_prop = list()
+  
+  
+  for (i in seq_along(years)) {
+    setwd(paste0(eia.dir, years[i]))
+    
+    gen.temp = as.data.table(read.xlsx(gen.fil[i], 
+                                       sheet = 2,
+                                       colNames = TRUE, 
+                                       startRow = 2,
+                                       cols = list_cols[[i]]))
+    
+    colnames(gen.temp) = list_names[[i]]
+    
+    gen.temp = gen.temp[ energy_source == "NUC" ]
+    
+    gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    
+    list_prop[[i]] = gen.temp
+    
+    setcolorder(gen.temp, 
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"))
+    
+    rm(gen.temp,list_cols,list_names)
+    
+  }
+  
+  prop_2016 = rbindlist(list_prop)
+  prop_2016 = unique(prop_2016)
+
+
+# add planned installments (more recent) ------
+
   setwd(add.dir)
-  plan_prop = as.data.table(read.xlsx(add.fil, startRow = 2, cols = c(1,8,11,15)))[ Technology == "Nuclear" ]
-    colnames(plan_prop) = c("year", "plant_code", "technology", "capacity")
-    plan_prop = plan_prop[, c("year", "plant_code", "capacity")]
-    setcolorder(plan_prop, c("plant_code", "capacity", "year"))
   
-  setwd(gen.dir)
+  op_planned = as.data.table(read.xlsx(add.fil, startRow = 2, cols = c(1,6,8:9,11,15)))[ Technology == "Nuclear" ]
   
-  plant_info = as.data.table(read.xlsx(plant.fil, startRow = 2, cols = c(3:4,6:7,10:11)))
-    colnames(plant_info) = c("plant_code", "plant_name", "city", "state", "latitude", "longitude")
-  plant_info = plant_info[ plant_code %in% cur_op[, plant_code] | 
-                             plant_code %in% cur_ret[, plant_code] | 
-                             plant_code %in% plan_prop[, plant_code] ]
+  colnames(op_planned) = c("op_year", "plane_name", "plant_code", "gen_id", "technology", "capacity")
   
-  
-# set retirements as negative ------
-  
-  cur_ret[, capacity := -capacity]
-  plan_ret[, capacity := -capacity]
-  
-# all generators together -----
-  
-  dt_all = rbindlist(list(cur_op, cur_ret, plan_ret, plan_prop, past_op))
-  dt_all[, (2:3) := lapply(.SD, as.numeric), .SDcols = 2:3 ]
-  dt_all = dt_all[, lapply(.SD, sum), by = c("plant_code", "year")]
-  
-  dt_all = dt_all[plant_info, on = "plant_code"]
-  
-  dt_1986 = dt_all[ year == "1986"]
-  
-  dt_long = dcast(dt_all, plant_code + plant_name + city + state + latitude + longitude ~ year, value.var = "capacity")
-  
-  
-# save files ------
-  
-  setwd(out.dir)
+  prop_2016 = prop_2016[!op_planned, on = c("plant_code", "gen_id")] # all remaining planned generators in this dataset were cancelled
 
-  fwrite(dt_all, "dt_all.csv", row.names = FALSE)
-  fwrite(dt_long, "dtlong.csv", row.names = FALSE)
-  fwrite(dt_1986, "dt_1986.csv", row.names = FALSE)
-  
