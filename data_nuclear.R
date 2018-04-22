@@ -36,8 +36,8 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     cur_ret = cur_ret[!is.na(ret_year)]
   
   plan_ret = cur_op[ !is.na(ret_year), c("plant_code", "gen_id", "technology", "capacity","ret_year")]
-  cur_op = cur_op[!plan_ret, on = c("plant_code", "gen_id"), 
-                  c("plant_code", "capacity", "op_year")]
+  # cur_op = cur_op[!plan_ret, on = c("plant_code", "gen_id"), 
+  #                 c("plant_code", "capacity", "op_year")]
   plan_ret = plan_ret[, c("plant_code", "capacity","ret_year")]
   
   colnames(cur_op) = c("plant_code", "capacity", "year")
@@ -86,9 +86,8 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 # save files ------
   
   setwd(out.dir)
-  
 
   fwrite(dt_all, "dt_all.csv", row.names = FALSE)
-  fwrite(dt_all, "dt_all.csv", row.names = FALSE)
+  fwrite(dt_long, "dtlong.csv", row.names = FALSE)
   fwrite(dt_1986, "dt_1986.csv", row.names = FALSE)
   
