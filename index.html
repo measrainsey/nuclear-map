@@ -37,6 +37,16 @@ body {
     stroke-opacity: 1;
 }
     
+.land {
+  fill: #f7f7f7;
+  stroke: #ccc;
+}
+
+.state-boundary {
+  fill: none;
+  stroke: #bbb;
+}
+
 
 
 div.tooltip {   
@@ -61,6 +71,7 @@ div.tooltip {
 
 </style>
 <head>
+    <link rel="stylesheet" href="css/main.css" />
     <title>Nuclear Power in the U.S.</title>
 </head>
 <body>
@@ -69,12 +80,15 @@ div.tooltip {
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
-<!--
-<div id="sliderContainer">
-    <input type="range" min="1969" max="2027" id="nYear" value="2018" width="500px">
-  <span>2018</span>
+<div id="slider-container">
+  <div id="slider-div"></div>
+  <div id="slider-probe">
+    <p></p>
+    <div></div>
+  </div>
 </div>
--->
+<div id="map-container"></div>
+
 
 
 <script>
@@ -103,51 +117,168 @@ var div = d3.select("body")
     
 var projection = d3.geo.albersUsa();
 
-queue()
-    .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuc_sequence.csv")
-    .defer(d3.csv, "nuc_first.csv")
-    .await(ready);
+//queue()
+//    .defer(d3.json, "us.json")
+//    .defer(d3.csv, "nuc_sequence.csv")
+//    .defer(d3.csv, "nuc_first.csv")
+//    .await(ready);
     
-function ready(error, us, sequence, first) {
-  if (error) throw error;
+//function ready(error, us, sequence, first) {
+//  if (error) throw error;
+//
+//  svg.append("path")
+//      .attr("class", "states")
+//      .datum(topojson.feature(us, us.objects.states))
+//      .attr("d", path); 
+//    
+//  svg.selectAll(".symbol")
+//      .data(sequence)
+//      .enter()
+//      .append("circle")
+//      .attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
+//      .attr("cx", function(d) {
+//        return projection([d.longitude, d.latitude])[0];})
+//      .attr("cy", function(d) {
+//        return projection([d.longitude, d.latitude])[1];})
+//      .attr("r", function(d) {
+//        return Math.abs(d.cum_capacity)/70;})
+//      .attr("vector-effect","non-scaling-stroke")
+//      .on("mouseover", function(d) {
+//        div.transition()
+//            .style("left", (d3.event.pageX + 10) + "px")
+//            .style("top", (d3.event.pageY - 80) + "px")
+//            .duration(200) 
+//            .style("opacity", .9);
+//        div.html("<strong>" + d.plant_name + "</strong><br/>" + Math.abs( d.cum_capacity ) + " MW " + ( d.cum_capacity < 0 ? "lost" : "installed" ) + "<br/>" + d.city + ", " + d.state)
+//              
+//	   }) 
+//      .on("mouseout", function(d) {       
+//        div.transition()        
+//           .duration(500)      
+//           .style("opacity", 0);   
+//        });
+//    
+//}
+    
+ 
+var g = svg.append("g");
 
-  svg.append("path")
-      .attr("class", "states")
-      .datum(topojson.feature(us, us.objects.states))
-      .attr("d", path); 
+g.append( "rect" )
+  .attr("width",width)
+  .attr("height",height)
+  .attr("fill","white")
+  .attr("opacity",0)
+  .on("mouseover",function(){
+    hoverData = null;
+    if ( probe ) probe.style("display","none");
+  })
+
+var map = g.append("g")
+    .attr("id","map");
     
-  svg.selectAll(".symbol")
-      .data(sequence)
+d3.json("us.json", function(error, us) {
+
+    
+  map.selectAll("path")
+      .data(topojson.feature(us, us.objects.states).features)
       .enter()
-      .append("circle")
-      .attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
-      .attr("cx", function(d) {
-        return projection([d.longitude, d.latitude])[0];})
-      .attr("cy", function(d) {
-        return projection([d.longitude, d.latitude])[1];})
-      .attr("r", function(d) {
-        return Math.abs(d.cum_capacity)/70;})
+      .append("path")
       .attr("vector-effect","non-scaling-stroke")
-      .on("mouseover", function(d) {
-        div.transition()
-            .style("left", (d3.event.pageX + 10) + "px")
-            .style("top", (d3.event.pageY - 80) + "px")
-            .duration(200) 
-            .style("opacity", .9);
-        div.html("<strong>" + d.plant_name + "</strong><br/>" + Math.abs( d.cum_capacity ) + " MW " + ( d.cum_capacity < 0 ? "lost" : "installed" ) + "<br/>" + d.city + ", " + d.state)
-              
-	   }) 
-      .on("mouseout", function(d) {       
-        div.transition()        
-           .duration(500)      
-           .style("opacity", 0);   
-        });
-    
-}
-    
-    
+      .attr("class","land")
+      .attr("d", path);
 
+   map.append("path")
+       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+       .attr("class", "state-boundary")
+       .attr("vector-effect","non-scaling-stroke")
+       .attr("d", path);
+
+//  d3.select("body")
+//    .append("div")
+//    .attr("id","loader")
+//    .style("top",d3.select("#play").node().offsetTop + "px")
+//    .style("height",d3.select("#date").node().offsetHeight + d3.select("#map-container").node().offsetHeight + "px")
+
+  d3.csv("nuc_sequence.csv",function(data){
+    var first = data[0];
+
+    // draw city points 
+    for ( var i in data ){
+      var projected = projection([ parseFloat(data[i].longitude), parseFloat(data[i].latitude) ])
+      map.append("circle")
+        .datum( data[i] )
+        .attr("cx",projected[0])
+        .attr("cy",projected[1])
+        .attr("r",1)
+        .attr("vector-effect","non-scaling-stroke")
+        .on("mousemove",function(d){
+          hoverData = d;
+          setProbeContent(d);
+          probe
+            .style( {
+              "display" : "block",
+              "top" : (d3.event.pageY - 80) + "px",
+              "left" : (d3.event.pageX + 10) + "px"
+            })
+        })
+        .on("mouseout",function(){
+          hoverData = null;
+          probe.style("display","none");
+        })
+    }
+
+    createLegend();
+
+    dateScale = createDateScale(orderedColumns).range([0,500]);
+    
+    createSlider();
+
+    d3.select("#play")
+      .attr("title","Play animation")
+      .on("click",function(){
+        if ( !isPlaying ){
+          isPlaying = true;
+          d3.select(this).classed("pause",true).attr("title","Pause animation");
+          animate();
+        } else {
+          isPlaying = false;
+          d3.select(this).classed("pause",false).attr("title","Play animation");
+          clearInterval( interval );
+        }
+      });
+
+//    drawMonth( orderedColumns[currentFrame] ); // initial map
+
+    window.onresize = resize;
+    resize();
+
+    d3.select("#loader").remove();
+
+  })
+
+});
+
+function animate(){
+  interval = setInterval( function(){
+    currentFrame++;
+
+    if ( currentFrame == orderedColumns.length ) currentFrame = 0;
+
+    d3.select("#slider-div .d3-slider-handle")
+      .style("left", 100*currentFrame/orderedColumns.length + "%" );
+    slider.value(currentFrame)
+
+    drawMonth( orderedColumns[ currentFrame ], true );
+
+    if ( currentFrame == orderedColumns.length - 1 ){
+      isPlaying = false;
+      d3.select("#play").classed("pause",false).attr("title","Play animation");
+      clearInterval( interval );
+      return;
+    }
+
+  },frameLength);
+}
     
     
                                                  
