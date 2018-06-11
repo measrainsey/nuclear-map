@@ -362,18 +362,26 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp[, longitude := first.temp[, longitude]]
     dt.temp[is.na(capacity), capacity := 0]
 
-    # dt.temp[year < min(ret_current[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
-    # dt.temp[year >= min(ret_current[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
-
-    # dt.temp[, cum_capacity := cumsum(capacity), by = list(status)]
-    
     dt.temp = dt.temp[ , c("year", "plant_code", "plant_name", "capacity", "city", "state", "latitude", "longitude"),
-                       with = FALSE][, lapply(.SD,sum), 
+                       with = FALSE][, lapply(.SD,sum),
                                      by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
     
-    dt.temp[, cum_capacity := cumsum(capacity)]
-    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude")]
-    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude"))
+    dt.temp[year < min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
+    dt.temp[year >= min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
+    dt.temp[, cum_capacity := cumsum(capacity), by = list(status)]
+    dt.temp[, max_capacity := max(cum_capacity)]
+    dt.temp[status == "operating", net_capacity := cum_capacity]
+    dt.temp[status == "retired", net_capacity := cum_capacity + max_capacity]
+    
+    # dt.temp = dt.temp[ , c("year", "plant_code", "plant_name", "capacity", "city", "state", "latitude", "longitude"),
+    #                    with = FALSE][, lapply(.SD,sum), 
+    #                                  by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
+    # 
+    # dt.temp[, cum_capacity := cumsum(capacity)]
+    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity",
+                          "city", "state", "latitude", "longitude")]
+    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity", 
+                           "city", "state", "latitude", "longitude"))
 
     list_ret_current[[i]] = dt.temp
 
@@ -400,19 +408,28 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp[, latitude := first.temp[, latitude]]
     dt.temp[, longitude := first.temp[, longitude]]
     dt.temp[is.na(capacity), capacity := 0]
-
-    # dt.temp[year < min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
-    # dt.temp[year >= min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
-    # dt.temp[, cum_capacity := cumsum(capacity), by = list(status)]
     
     dt.temp = dt.temp[ , c("year", "plant_code", "plant_name", "capacity", "city", "state", "latitude", "longitude"),
-                       with = FALSE][, lapply(.SD,sum), 
+                       with = FALSE][, lapply(.SD,sum),
                                      by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
-    
-    dt.temp[, cum_capacity := cumsum(capacity)]
-    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude")]
-    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude"))
 
+    dt.temp[year < min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
+    dt.temp[year >= min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
+    dt.temp[, cum_capacity := cumsum(capacity), by = list(status)]
+    dt.temp[, max_capacity := max(cum_capacity)]
+    dt.temp[status == "operating", net_capacity := cum_capacity]
+    dt.temp[status == "retired", net_capacity := cum_capacity + max_capacity]
+    
+    # dt.temp = dt.temp[ , c("year", "plant_code", "plant_name", "capacity", "city", "state", "latitude", "longitude"),
+    #                    with = FALSE][, lapply(.SD,sum), 
+    #                                  by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
+    
+    # dt.temp[, cum_capacity := cumsum(capacity)]
+    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity",
+                          "city", "state", "latitude", "longitude")]
+    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity", 
+                           "city", "state", "latitude", "longitude"))
+    
     list_ret_planned[[i]] = dt.temp
 
   }
@@ -448,10 +465,14 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
                                      by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
 
     dt.temp[, cum_capacity := cumsum(capacity)]
+    dt.temp[, max_capacity := max(cum_capacity)]
+    dt.temp[, net_capacity := cum_capacity]
 
-    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude")]
-    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "city", "state", "latitude", "longitude"))
-
+    dt.temp = dt.temp[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity",
+                          "city", "state", "latitude", "longitude")]
+    setcolorder(dt.temp, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", "max_capacity", "net_capacity", 
+                           "city", "state", "latitude", "longitude"))
+    
     list_op_all[[i]] = dt.temp
 
   }
@@ -461,7 +482,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 # combine all data tables -------
 
   dt_sequence = rbindlist(c(list_ret_current,list_ret_planned,list_op_all))
-  dt_sequence = dt_sequence[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity", 
+  dt_sequence = dt_sequence[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity",  "max_capacity", "net_capacity", 
                                 "city", "state", "latitude", "longitude")]
 
 
@@ -470,5 +491,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence.csv", row.names = FALSE)
-  fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuc_sequence_3.csv", row.names = FALSE)
+  # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
