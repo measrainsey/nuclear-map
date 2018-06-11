@@ -7,6 +7,17 @@ body {
     font: 14px/16px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+/* * {
+	margin: 0;
+	padding: 0;
+}
+
+
+svg {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+} */
 
 .states {
   fill: #ccc;
@@ -37,63 +48,6 @@ body {
     stroke-opacity: 1;
 }
 
-#play-button {
-  position: absolute;
-  top: 140px;
-  left: 50px;
-  background: #f08080;
-  padding-right: 26px;
-  border-radius: 3px;
-  border: none;
-  color: white;
-  margin: 0;
-  padding: 0 12px;
-  width: 60px;
-  cursor: pointer;
-  height: 30px;
-}
-
-#play-button:hover {
-  background-color: #696969;
-}
-
-.ticks {
-  font-size: 10px;
-}
-
-.track,
-.track-inset,
-.track-overlay {
-  stroke-linecap: round;
-}
-
-.track {
-  stroke: #000;
-  stroke-opacity: 0.3;
-  stroke-width: 10px;
-}
-
-.track-inset {
-  stroke: #dcdcdc;
-  stroke-width: 8px;
-}
-
-.track-overlay {
-  pointer-events: stroke;
-  stroke-width: 50px;
-  stroke: transparent;
-  cursor: crosshair;
-}
-
-.handle {
-  fill: #fff;
-  stroke: #000;
-  stroke-opacity: 0.5;
-  stroke-width: 1.25px;
-}
-
-
-
 div.tooltip {
  	position: absolute;
     background-color: white;
@@ -108,11 +62,16 @@ div.tooltip {
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.25);
 }
 
-#sliderContainer {
-    text-align: center;
-    position: relative;
-    top: 500px;
-	}
+
+#slider {
+  position: absolute;
+  left: 50%;
+  margin-left: -300px;
+  bottom: 20px;
+  width: 600px;
+  height: 50px;
+}
+
 
 
 </style>
@@ -121,20 +80,38 @@ div.tooltip {
     <title>Nuclear Power in the U.S.</title>
 </head>
 <body>
+	<!-- <svg> -->
+  <!-- <g id="plants"></g>
+	<g id="boundary"></g> -->
+	<!-- </svg> -->
+
 <!--<h1>Net Change in Nuclear Capacity</h1>-->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
-
+<script src="static/chroniton.js"></script>
+<link href="static/chroniton.css" rel="stylesheet">
+<div id="slider"></div>
 
 <script>
+
+// var svgPlants = d3.select("svg #plants"),
+// 	svgBoundary = d3.select("svg #boundary"),
+var plants = {},
+	startYear = 1969,
+	endYear = 2027,
+  currentYear = startYear;
 
 var width = 960,
     height = 550;
 
 var projection = d3.geo.albersUsa();
 
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
 var radius = d3.scale.sqrt()
     .domain([0, 1e6])
@@ -142,28 +119,16 @@ var radius = d3.scale.sqrt()
 
 var path = d3.geo.path();
 
-var svg = d3.select("body")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
 var div = d3.select("body")
 		    .append("div")
     		.attr("class", "tooltip")
     		.style("opacity", 0);
-
-var svgPlants = d3.select("svg #plants"),
-  plants = {},
-  startYear = 1969,
-	endYear = 2027,
-  currentYear = startYear;
 
 queue()
     .defer(d3.json, "us.json")
     .defer(d3.csv, "nuc_sequence.csv")
     .defer(d3.csv, "nuc_first.csv")
     .await(ready);
-
 
 function ready(error, us, sequence, first) {
   if (error) throw error;
@@ -173,13 +138,9 @@ function ready(error, us, sequence, first) {
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
 
-		for (var i = 0; i < endYear-startYear; i++) {
-			plants = sequence.filter(function(d) { return d.year == startYear; })
-		}
-
 		function update() {
 			svg.selectAll(".symbol")
-		      .data(plants)
+					.data(sequence.filter(function(d) { return d.year == currentYear; }))
 		      .enter()
 		      .append("circle")
 		      .attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
@@ -204,13 +165,37 @@ function ready(error, us, sequence, first) {
 		           .duration(500)
 		           .style("opacity", 0);
 		        });
+
+						d3.select("#year").html(currentYear);
+
 		}
 
 		update();
 
+		d3.select("#slider")
+				.call(
+					chroniton()
+						.domain([new Date(startYear, 1, 1), new Date(endYear, 1, 1)])
+						.labelFormat(function(date) {
+							return Math.ceil((date.getFullYear()) / 1) * 1;
+						})
+						.width(600)
+						.on('change', function(date) {
+							var newYear = Math.ceil((date.getFullYear()) / 1) * 1;
+							if (newYear != currentYear) {
+								currentYear = newYear;
+								svg.selectAll(".symbol").remove();
+								update();
+							}
+						})
+						.playButton(true)
+						.playbackRate(0.2)
+						.loop(true)
+				);
+
 
   // svg.selectAll(".symbol")
-  //     .data(plants)
+  //     .data(sequence.filter(function(d) { return d.year == startYear; }))
   //     .enter()
   //     .append("circle")
   //     .attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
