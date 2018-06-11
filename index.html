@@ -140,7 +140,7 @@ function ready(error, us, sequence, first) {
 		            .style("top", (d3.event.pageY - 80) + "px")
 		            .duration(200)
 		            .style("opacity", .9);
-		        div.html("<strong>" + d.plant_name + "</strong><br/>" + Math.abs( d.cum_capacity ) + " MW " + ( d.cum_capacity < 0 ? "lost" : "installed" ) + "<br/>" + d.city + ", " + d.state)
+		        div.html("<strong>" + d.plant_name + "</strong><br/>" + Math.abs( d.cum_capacity ) + " MW " + ( d.cum_capacity < 0 ? "removed capacity" : "installed capacity" ) + "<br/>" + d.city + ", " + d.state)
 
 			   })
 		      .on("mouseout", function(d) {
