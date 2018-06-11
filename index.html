@@ -123,18 +123,16 @@ function ready(error, us, sequence, first) {
 
 		function update() {
 			svg.selectAll(".symbol")
-					.data(sequence.filter(function(d) { return d.year == currentYear; }))
+					.data(sequence.filter(function(d) { return d.year == currentYear; })
+								.sort(function(a, b) { return b.cum_capacity - a.cum_capacity; }))
 		      .enter()
-		      .append("circle")
+					.append("circle")
+					.attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} )
 		      .attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
 		      .attr("cx", function(d) {
 		        return projection([d.longitude, d.latitude])[0];})
 		      .attr("cy", function(d) {
 		        return projection([d.longitude, d.latitude])[1];})
-		      .attr("r", function(d) {
-						// return Math.abs((d.capacity < 0 ? d.capacity : d.cum_capacity))/70;}
-		        return Math.abs(d.cum_capacity)/70;}
-					)
 		      .attr("vector-effect","non-scaling-stroke")
 		      .on("mouseover", function(d) {
 		        div.transition()
@@ -159,6 +157,7 @@ function ready(error, us, sequence, first) {
 		}
 
 		update();
+
 
 		d3.select("#slider")
 				.call(
