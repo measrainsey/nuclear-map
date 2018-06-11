@@ -366,8 +366,8 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
                        with = FALSE][, lapply(.SD,sum),
                                      by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
     
-    dt.temp[year < min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
-    dt.temp[year >= min(ret_planned[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
+    dt.temp[year < min(ret_current[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "operating"]
+    dt.temp[year >= min(ret_current[plant_code == dt.un[, plant_code][i] & capacity < 0, year]), status := "retired"]
     dt.temp[, cum_capacity := cumsum(capacity), by = list(status)]
     dt.temp[, max_capacity := max(cum_capacity)]
     dt.temp[status == "operating", net_capacity := cum_capacity]
@@ -491,5 +491,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence_3.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuc_sequence_4.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
