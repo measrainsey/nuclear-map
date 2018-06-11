@@ -431,6 +431,11 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp[, latitude := first.temp[, latitude]]
     dt.temp[, longitude := first.temp[, longitude]]
     dt.temp[is.na(capacity), capacity := 0]
+    
+    dt.temp = dt.temp[ , c("year", "plant_code", "plant_name", "capacity", "city", "state", "latitude", "longitude"),
+                       with = FALSE][, lapply(.SD,sum), 
+                                     by = list(plant_code, plant_name, year, city, state, latitude, longitude)]
+    
 
     dt.temp[, cum_capacity := cumsum(capacity)]
 
