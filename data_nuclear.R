@@ -352,7 +352,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp = ret_current[plant_code == dt.un[, plant_code][i]]
     first.temp = dt_first[plant_code == dt.un[, plant_code][i]]
     dt.temp = dt.temp[dt.years, on = "year"]
-    dt.temp = dt.temp[ year >= first.temp[, op_year]]
+    # dt.temp = dt.temp[ year >= first.temp[, op_year]]
 
     dt.temp[, plant_code := first.temp[, plant_code]]
     dt.temp[, plant_name := first.temp[, plant_name]]
@@ -399,7 +399,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp = ret_planned[plant_code == dt.un[, plant_code][i]]
     first.temp = dt_first[plant_code == dt.un[, plant_code][i]]
     dt.temp = dt.temp[dt.years, on = "year"]
-    dt.temp = dt.temp[ year >= first.temp[, op_year]]
+    # dt.temp = dt.temp[ year >= first.temp[, op_year]]
 
     dt.temp[, plant_code := first.temp[, plant_code]]
     dt.temp[, plant_name := first.temp[, plant_name]]
@@ -450,7 +450,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     dt.temp = op_all[plant_code == dt.un[, plant_code][i]]
     first.temp = dt_first[plant_code == dt.un[, plant_code][i]]
     dt.temp = dt.temp[dt.years, on = "year"]
-    dt.temp = dt.temp[ year >= first.temp[, op_year]]
+    # dt.temp = dt.temp[ year >= first.temp[, op_year]]
 
     dt.temp[, plant_code := first.temp[, plant_code]]
     dt.temp[, plant_name := first.temp[, plant_name]]
@@ -491,5 +491,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence_4.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuc_sequence_5.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
