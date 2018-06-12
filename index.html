@@ -121,8 +121,8 @@ div.tooltip {
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
-<script src="static/chroniton.js"></script>
-<link href="static/chroniton.css" rel="stylesheet">
+<script src="chroniton.js"></script>
+<link href="chroniton.css" rel="stylesheet">
 <div id="slider"></div>
 
 <script>
@@ -181,7 +181,7 @@ function ready(error, us, sequence, first) {
       .attr("class", "states")
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
-			
+
 		function update(y,tween) {
 
 			circle = svg.selectAll("circle")
