@@ -170,7 +170,7 @@ g.append( "rect" )
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuc_sequence_16.csv")
+    .defer(d3.csv, "nuclear_data.csv")
     .defer(d3.csv, "nuc_first.csv")
     .await(ready);
 

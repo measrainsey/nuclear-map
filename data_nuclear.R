@@ -509,5 +509,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence_16.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
