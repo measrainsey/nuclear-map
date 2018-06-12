@@ -180,7 +180,8 @@ function ready(error, us, sequence, first) {
 
 			circle = svg.selectAll("circle")
 					.data(sequence.filter(function(d) { return d.year == y; })
-								.sort(function(a, b) { return b.cum_capacity - a.cum_capacity; }))
+								.sort(function(a, b) { return b.cum_capacity - a.cum_capacity; })
+								.sort(function (a,b) {return d3.ascending(a.plant_code, b.plant_code);}))
 
 			// circle
 			// 	.exit()
