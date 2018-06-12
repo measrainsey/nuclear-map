@@ -126,35 +126,6 @@ function ready(error, us, sequence, first) {
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
 
-	// var firsts = svg.selectAll("circle")
-	// 	.data(first)
-	// 	.enter()
-	// 	.append("circle")
-	// 	.attr("cx", function(d) {
-	// 		return projection([d.longitude, d.latitude])[0];})
-	// 	.attr("cy", function(d) {
-	// 		return projection([d.longitude, d.latitude])[1];})
-	// 	.attr("r", 1 )
-	// 	.attr("vector-effect","non-scaling-stroke")
-	// 	.on("mouseover", function(d) {
-	// 		div.transition()
-	// 				.style("left", (d3.event.pageX + 10) + "px")
-	// 				.style("top", (d3.event.pageY - 80) + "px")
-	// 				.duration(200)
-	// 				.style("opacity", .9);
-	// 		div.html("<strong>" + d.plant_name + "</strong><br/>" +
-	// 		(d.cum_capacity < 0 ? Math.abs(d.cum_capacity) + " MW removed" + "<br/>" + Math.abs( d.net_capacity ) + " MW remaining"  : Math.abs( d.cum_capacity ) + " MW total") +
-	// 		"<br/>" + d.city + ", " + d.state)
-	// 			})
-	// 	.on("mouseout", function(d) {
-	// 		div.transition()
-	// 			 .duration(500)
-	// 			 .style("opacity", 0);
-	// 			});
-	//
-	//
-
-
 
 		// function update() {
 		//
