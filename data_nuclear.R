@@ -341,7 +341,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
                                                                   "city", "state", "latitude", "longitude")]
 # data table of all years ------
 
-  dt.years = data.table(year = 1969:2027)
+  dt.years = data.table(year = 1968:2027)
 
 # sequence of retired plants -----
 
@@ -491,5 +491,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence_5.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuc_sequence_6.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
