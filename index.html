@@ -112,21 +112,6 @@ var div = d3.select("body")
     		.attr("class", "tooltip")
     		.style("opacity", 0);
 
-var g = svg.append("g");
-
-g.append( "rect" )
-  .attr("width",width)
-  .attr("height",height)
-  .attr("fill","white")
-  .attr("opacity",0)
-  .on("mouseover",function(){
-    hoverData = null;
-    if ( probe ) probe.style("display","none");
-  })
-
-var map = g.append("g")
-    .attr("id","map");
-
 queue()
     .defer(d3.json, "us.json")
     .defer(d3.csv, "nuc_sequence_6.csv")
