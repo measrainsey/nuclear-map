@@ -181,15 +181,11 @@ function ready(error, us, sequence, first) {
       .attr("class", "states")
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
-
-
+			
 		function update(y,tween) {
-
 
 			circle = svg.selectAll("circle")
 					.data(sequence.filter(function(d) { return d.year == y; })
-								// .sort(function(a, b) { return Math.abs(b.cum_capacity) - Math.abs(a.cum_capacity); })
-								// .sort(function (a,b) {return d3.ascending(a.plant_code, b.plant_code);})
 								.sort(function (a,b) {return d3.descending(a.order, b.order);})
 							)
 
@@ -240,7 +236,6 @@ function ready(error, us, sequence, first) {
 
 
 		}
-
 
 		update(currentYear,false)
 
