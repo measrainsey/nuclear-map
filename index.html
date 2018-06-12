@@ -3,15 +3,39 @@
 <style>
 
 body {
-   /* font-family: 'Roboto Condensed', sans-serif; */
-    font: 14px/16px "Helvetica Neue", Helvetica, Arial, sans-serif;
+   font-family: 'Roboto Condensed', sans-serif;
+    /* font: 14px/16px "Helvetica Neue", Helvetica, Arial, sans-serif; */
 }
 
-h1 {
-	font: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 35px;
-}
+/* h1, h2 {
+		font-family: 'Roboto Condensed', sans-serif;
+    /* position: absolute; */
+    /* left: 30px; */
+    font-size: 1.3em;
+    font-weight: 100;
+} */
 
+h1, h2, #intro{
+	font-family: 'Roboto Condensed', sans-serif;
+  text-align: center;
+  font-weight: normal;
+}
+h1{
+	font-family: 'Roboto Condensed', sans-serif;
+  font-size: 30px;
+  margin: 20px;
+  color: #1a1a1a;
+}
+h2{
+  font-size: 18px;
+  color: #999;
+  margin: 15px;
+}
+#intro{
+  width: 800px;
+  margin: auto;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: 18px;
+}
 
 
 .states {
@@ -23,24 +47,28 @@ h1 {
     fill: #67a9cf;
     stroke: #67a9cf;
     opacity: 0.65;
+		stroke-width: .5px;
 }
 
 .symbol:hover {
     fill-opacity: 1;
     stroke-width: 1px;
+		stroke-width: .5px;
 }
 
 .symbol--gain{
   fill: #67a9cf;
   stroke: #67a9cf;
+	stroke-width: .5px;
   fill-opacity: .65;
   stroke-opacity: 1;
 }
 .symbol--loss{
-    fill: #ef8a62;
-    stroke: #ef8a62;
-    fill-opacity: .65;
-    stroke-opacity: 1;
+  fill: #ef8a62;
+  stroke: #ef8a62;
+	stroke-width: .5px;
+  fill-opacity: .65;
+  stroke-opacity: 1;
 }
 
 div.tooltip {
@@ -61,12 +89,11 @@ div.tooltip {
 #slider {
   position: absolute;
   left: 50%;
-  margin-left: -300px;
-  bottom: 20px;
+  margin-left: -400px;
+  bottom: 40px;
   width: 600px;
   height: 50px;
 }
-
 
 
 </style>
@@ -76,6 +103,7 @@ div.tooltip {
 </head>
 <body>
 <!-- <h1>U.S. Nuclear Generation in <span id="year">1968</span></h1> -->
+<!-- <h1>The History and Future of Nuclear Power Plants</h1> -->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
