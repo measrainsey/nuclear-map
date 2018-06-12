@@ -130,7 +130,7 @@ var plants = {},
 	endYear = 2027,
   currentYear = startYear;
 
-var width = 980,
+var width = 1000,
     height = 480;
 
 var projection = d3.geo.albersUsa()
@@ -262,25 +262,25 @@ function ready(error, us, sequence, first) {
 
 		var legend = svg.append("g")
 									.attr("id","legend")
-									.attr("transform", "translate(" + (width - 200) + "," + (height - 145) + ")");
+									.attr("transform", "translate(" + (width - 210) + "," + (height - 145) + ")");
 
 		legend.append("circle").attr("class","symbol symbol--gain").attr("r",5).attr("cx",5).attr("cy",10)
 		legend.append("circle").attr("class","symbol symbol--loss").attr("r",5).attr("cx",5).attr("cy",30)
 
-		legend.append("text").text("MW added").attr("x",15).attr("y",13);
-		legend.append("text").text("MW lost").attr("x",15).attr("y",33);
+		legend.append("text").text("Capacity added").attr("x",15).attr("y",13);
+		legend.append("text").text("Capacity lost").attr("x",15).attr("y",33);
 
 		var sizes = [ 1000, 3000, 4000 ];
 	  for ( var i in sizes ){
 			legend.append("circle")
 	      .attr( "r", ( sizes[i] )/70 )
-	      .attr( "cx", 80 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "cx", 90 + ( sizes[sizes.length-1] )/70 )
 	      .attr( "cy", 2 * ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 )
 	      .attr("vector-effect","non-scaling-stroke");
 	    legend.append("text")
 	      .text( (sizes[i] / 1000) + "GW" + (i == sizes.length-1 ? "" : "") )
 	      .attr( "text-anchor", "middle" )
-	      .attr( "x", 80 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "x", 90 + ( sizes[sizes.length-1] )/70 )
 	      .attr( "y", 2 * ( ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 ) + 5 )
 	      .attr( "dy", 13)
 	  }
