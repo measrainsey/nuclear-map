@@ -84,18 +84,18 @@ div.tooltip {
   margin: 0;
 }
 
-/* #slider {
+#slider {
   position: relative;
 	text-align: center;
-} */
+}
 
-#slider {
+/* #slider {
   position: absolute;
 	left: 300px;
   bottom: 550px;
   width: 600px;
   height: 45px;
-}
+} */
 
 .legend circle {
   fill: none;
@@ -132,12 +132,14 @@ var plants = {},
 	endYear = 2027,
   currentYear = startYear;
 
-var width = 1100,
-    height = 500;
+// var width = 1100,
+//     height = 500;
+var width = window.innerWidth-100, // (1)
+  height = window.innerHeight-100;
 
 var projection = d3.geo.albersUsa()
 	.scale(1010)
-	.translate( [width/2, height/2] );
+	.translate( [width/2, height/2-20] );
 
 var path = d3.geo.path()
 	.projection(projection);
@@ -168,7 +170,7 @@ g.append( "rect" )
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuc_sequence_6.csv")
+    .defer(d3.csv, "nuc_sequence_16.csv")
     .defer(d3.csv, "nuc_first.csv")
     .await(ready);
 
@@ -186,8 +188,10 @@ function ready(error, us, sequence, first) {
 
 			circle = svg.selectAll("circle")
 					.data(sequence.filter(function(d) { return d.year == y; })
-								.sort(function(a, b) { return b.cum_capacity - a.cum_capacity; })
-								.sort(function (a,b) {return d3.ascending(a.plant_code, b.plant_code);}))
+								// .sort(function(a, b) { return Math.abs(b.cum_capacity) - Math.abs(a.cum_capacity); })
+								// .sort(function (a,b) {return d3.ascending(a.plant_code, b.plant_code);})
+								.sort(function (a,b) {return d3.descending(a.order, b.order);})
+							)
 
 			circle
 					.enter()
