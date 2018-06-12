@@ -112,6 +112,21 @@ var div = d3.select("body")
     		.attr("class", "tooltip")
     		.style("opacity", 0);
 
+var g = svg.append("g");
+
+g.append( "rect" )
+  .attr("width",width)
+  .attr("height",height)
+  .attr("fill","white")
+  .attr("opacity",0)
+  .on("mouseover",function(){
+    hoverData = null;
+    if ( probe ) probe.style("display","none");
+  })
+
+var map = g.append("g")
+    .attr("id","map");
+
 queue()
     .defer(d3.json, "us.json")
     .defer(d3.csv, "nuc_sequence_4.csv")
@@ -121,10 +136,44 @@ queue()
 function ready(error, us, sequence, first) {
   if (error) throw error;
 
-  svg.append("path")
-      .attr("class", "states")
-      .datum(topojson.feature(us, us.objects.states))
-      .attr("d", path);
+  // svg.append("path")
+  //     .attr("class", "states")
+  //     .datum(topojson.feature(us, us.objects.states))
+  //     .attr("d", path);
+
+	map.selectAll("path")
+			.data(topojson.feature(us, us.objects.states).features)
+			.enter()
+			.append("path")
+			.attr("vector-effect","non-scaling-stroke")
+			.attr("class","land")
+			.attr("d", path);
+
+
+		for ( var i in first ){
+			var projected = projection([ parseFloat(first[i].longitude), parseFloat(first[i].latitude) ])
+			map.append("circle")
+				.datum( sequence[i] )
+				.attr("cx",projected[0])
+				.attr("cy",projected[1])
+				.attr("r",1)
+				.attr("vector-effect","non-scaling-stroke")
+				.on("mousemove",function(d){
+					hoverData = d;
+					setProbeContent(d);
+					probe
+						.style( {
+							"display" : "block",
+							"top" : (d3.event.pageY - 80) + "px",
+							"left" : (d3.event.pageX + 10) + "px"
+						})
+				})
+				.on("mouseout",function(){
+					hoverData = null;
+					probe.style("display","none");
+				})
+			}
+
 
 
 		// function update() {
