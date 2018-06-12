@@ -136,13 +136,10 @@ queue()
 function ready(error, us, sequence, first) {
   if (error) throw error;
 
-	map.selectAll("path")
-			.data(topojson.feature(us, us.objects.states).features)
-			.enter()
-			.append("path")
-			.attr("vector-effect","non-scaling-stroke")
-			.attr("class","land")
-			.attr("d", path);
+	svg.append("path")
+      .attr("class", "states")
+      .datum(topojson.feature(us, us.objects.states))
+      .attr("d", path);
 
 		function update(y,tween) {
 
