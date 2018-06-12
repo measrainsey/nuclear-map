@@ -37,7 +37,6 @@ h2{
   font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: 18px;
 }
 
-
 .states {
   fill: #dbdbdb;
   stroke: #fff;
@@ -87,10 +86,10 @@ div.tooltip {
 
 
 #slider {
-  position: absolute;
+  position: relative;
   left: 50%;
   margin-left: -450px;
-  bottom: 25px;
+  bottom: 15px;
   width: 600px;
   height: 50px;
 }
@@ -115,7 +114,7 @@ div.tooltip {
 </head>
 <body>
 <!-- <h1>U.S. Nuclear Generation in <span id="year">1968</span></h1> -->
-<!-- <h1>The History and Future of Nuclear Power Plants</h1> -->
+<h1>The History and Future of Nuclear Power Plants</h1>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
@@ -132,22 +131,21 @@ var plants = {},
   currentYear = startYear;
 
 var width = 980,
-    height = 585;
+    height = 480;
 
-var projection = d3.geo.albersUsa();
+var projection = d3.geo.albersUsa()
+	.scale(1000)
+	.translate( [width/2,height/2] );
+
+var path = d3.geo.path()
+	.projection(projection);
 
 var svg = d3.select("body")
     .append("svg")
     .attr("width", width)
     .attr("height", height);
 
-// var radius = d3.scale.sqrt()
-//     .domain([0, 1e6])
-//     .range([0, 10]);
-
 var radius = function(d) { return (Math.abs(d.cum_capacity))/70;}
-
-var path = d3.geo.path();
 
 var div = d3.select("body")
 		    .append("div")
@@ -264,7 +262,7 @@ function ready(error, us, sequence, first) {
 
 		var legend = svg.append("g")
 									.attr("id","legend")
-									.attr("transform", "translate(" + (width - 450) + "," + (height - 135) + ")");
+									.attr("transform", "translate(" + (width - 200) + "," + (height - 145) + ")");
 
 		legend.append("circle").attr("class","symbol symbol--gain").attr("r",5).attr("cx",5).attr("cy",10)
 		legend.append("circle").attr("class","symbol symbol--loss").attr("r",5).attr("cx",5).attr("cy",30)
