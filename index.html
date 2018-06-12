@@ -89,11 +89,23 @@ div.tooltip {
 #slider {
   position: absolute;
   left: 50%;
-  margin-left: -400px;
-  bottom: 40px;
+  margin-left: -450px;
+  bottom: 25px;
   width: 600px;
   height: 50px;
 }
+
+.legend circle {
+  fill: none;
+  stroke: #ccc;
+}
+
+.legend text {
+  fill: #777;
+  font: 10px sans-serif;
+  text-anchor: middle;
+}
+
 
 
 </style>
@@ -119,8 +131,8 @@ var plants = {},
 	endYear = 2027,
   currentYear = startYear;
 
-var width = 960,
-    height = 550;
+var width = 980,
+    height = 585;
 
 var projection = d3.geo.albersUsa();
 
@@ -129,9 +141,11 @@ var svg = d3.select("body")
     .attr("width", width)
     .attr("height", height);
 
-var radius = d3.scale.sqrt()
-    .domain([0, 1e6])
-    .range([0, 10]);
+// var radius = d3.scale.sqrt()
+//     .domain([0, 1e6])
+//     .range([0, 10]);
+
+var radius = function(d) { return (Math.abs(d.cum_capacity))/70;}
 
 var path = d3.geo.path();
 
@@ -139,6 +153,18 @@ var div = d3.select("body")
 		    .append("div")
     		.attr("class", "tooltip")
     		.style("opacity", 0);
+
+var g = svg.append("g");
+
+g.append( "rect" )
+  .attr("width",width)
+  .attr("height",height)
+  .attr("fill","white")
+  .attr("opacity",0)
+  .on("mouseover",function(){
+    hoverData = null;
+    if ( probe ) probe.style("display","none");
+  })
 
 queue()
     .defer(d3.json, "us.json")
@@ -153,6 +179,7 @@ function ready(error, us, sequence, first) {
       .attr("class", "states")
       .datum(topojson.feature(us, us.objects.states))
       .attr("d", path);
+
 
 		function update(y,tween) {
 
@@ -172,11 +199,13 @@ function ready(error, us, sequence, first) {
 						.ease("linear")
 						.duration(500)
 						.attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
-						.attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
+						// .attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
+						.attr("r", radius );
 			} else {
 				circle
 					.attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
-					.attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
+					// .attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
+					.attr("r", radius );
 			}
 
 				circle
@@ -205,6 +234,7 @@ function ready(error, us, sequence, first) {
 
 						d3.select("#year").html(currentYear);
 
+
 		}
 
 
@@ -232,7 +262,34 @@ function ready(error, us, sequence, first) {
 						.loop(true)
 				);
 
+		var legend = svg.append("g")
+									.attr("id","legend")
+									.attr("transform", "translate(" + (width - 450) + "," + (height - 135) + ")");
+
+		legend.append("circle").attr("class","symbol symbol--gain").attr("r",5).attr("cx",5).attr("cy",10)
+		legend.append("circle").attr("class","symbol symbol--loss").attr("r",5).attr("cx",5).attr("cy",30)
+
+		legend.append("text").text("MW added").attr("x",15).attr("y",13);
+		legend.append("text").text("MW lost").attr("x",15).attr("y",33);
+
+		var sizes = [ 1000, 3000, 4000 ];
+	  for ( var i in sizes ){
+			legend.append("circle")
+	      .attr( "r", ( sizes[i] )/70 )
+	      .attr( "cx", 80 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "cy", 2 * ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 )
+	      .attr("vector-effect","non-scaling-stroke");
+	    legend.append("text")
+	      .text( (sizes[i] / 1000) + "GW" + (i == sizes.length-1 ? "" : "") )
+	      .attr( "text-anchor", "middle" )
+	      .attr( "x", 80 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "y", 2 * ( ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 ) + 5 )
+	      .attr( "dy", 13)
+	  }
+
 
 	  }
+
+
 
 </script>
