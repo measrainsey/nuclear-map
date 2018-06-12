@@ -15,6 +15,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   library(lubridate)
   library(openxlsx)
   library(stringr)
+  library(dplyr)
 
 # list of years -------
   years = 2011:2016
@@ -484,12 +485,29 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   dt_sequence = rbindlist(c(list_ret_current,list_ret_planned,list_op_all))
   dt_sequence = dt_sequence[, c("year", "plant_code", "plant_name", "capacity", "cum_capacity",  "max_capacity", "net_capacity", 
                                 "city", "state", "latitude", "longitude")]
+  
+  dt_2027 = dt_sequence[ year == 2027 ]
+  dt_2027 = dt_2027[order(abs(cum_capacity))]
+  dt_2027[, order := 1:67]
+  dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
+  dt_2027[ plant_name == "Kewaunee", order := 28]
+  
+  dt_2027[ plant_name == "James A Fitzpatrick", order := 40]
+  dt_2027[ plant_name == "R E Ginna Nuclear Power Plant", order := 13]
+  dt_2027[ plant_name == "Nine Mile Point Nuclear Station", order := 6]
+  
+  dt_2027[ plant_name == "Pilgrim Nuclear Power Station", order := 26]
+  dt_2027[ plant_name == "Millstone", order := 7]
+  dt_2027[ plant_name == "Seabrook", order := 46]
+
+  dt_sequence = dt_sequence[dt_2027[, c("plant_code", "order")], on = "plant_code"]
+  # dt_sequence = dt_sequence[order(abs(cum_capacity))] 
 
 
 # export data ------
 
   setwd(out.dir)
 
-  fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuc_sequence_6.csv", row.names = FALSE)
+  # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuc_sequence_16.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
