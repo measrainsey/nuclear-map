@@ -11,18 +11,18 @@ body {
 		font-family: 'Roboto Condensed', sans-serif;
     /* position: absolute; */
     /* left: 30px; */
-    font-size: 1.3em;
+    font-size: 1.5em;
     font-weight: 100;
 } */
 
-h1, h2, #intro{
+h1, h2 {
 	font-family: 'Roboto Condensed', sans-serif;
-  text-align: center;
   font-weight: normal;
 }
 h1{
+	text-align: center;
 	font-family: 'Roboto Condensed', sans-serif;
-  font-size: 30px;
+  font-size: 50px;
   margin: 20px;
   color: #1a1a1a;
 }
@@ -31,14 +31,19 @@ h2{
   color: #999;
   margin: 15px;
 }
-#intro{
+
+/* label{
+	font-family: 'Roboto Condensed', sans-serif;
+	float: left;
   width: 800px;
-  margin: auto;
-  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: normal; line-height: 18px;
-}
+	font-size: 18px;
+	color: #999;
+	margin-left: 115px;
+	margin-bottom: -50px;
+} */
 
 .states {
-  fill: #dbdbdb;
+  fill: #ddd;
   stroke: #fff;
 }
 
@@ -50,6 +55,7 @@ h2{
 }
 
 .symbol:hover {
+		stroke: #000;
     fill-opacity: 1;
     stroke-width: 1px;
 		stroke-width: .5px;
@@ -84,14 +90,41 @@ div.tooltip {
     box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.25);
 }
 
+#label{
+	position:absolute;
+	font-family: 'Roboto Condensed', sans-serif;
+  /* border-left: 5px solid #ccc; */
+	/* padding-top: 25px;
+	padding-right: 0px;
+	padding-bottom: 20px;
+	padding-left: 8px; */
+	/* margin-bottom: -50px; */
+	/* top: 50px; */
+	bottom: 511px;
+  left: 270px;
+  color: #333;
+	/* float: left; */
+  /* width: 2.6em; */
+	font-size: 32px;
+}
+#label p{
+  margin: 0;
+}
 
 #slider {
   position: relative;
-  left: 50%;
+	text-align: center;
+	/* padding-top: 25px;
+	padding-right: 0px;
+	padding-bottom: 20px;
+	padding-left: 8px; */
+	/* bottom: 550px;
+	margin-left: 285px; */
+  /* left: 50%;
   margin-left: -450px;
-  bottom: 15px;
+  bottom: 530px;
   width: 600px;
-  height: 50px;
+  height: 50px; */
 }
 
 .legend circle {
@@ -114,7 +147,8 @@ div.tooltip {
 </head>
 <body>
 <!-- <h1>U.S. Nuclear Generation in <span id="year">1968</span></h1> -->
-<h1>The History and Future of Nuclear Power Plants</h1>
+<h1>The History and Future of U.S. Nuclear Power Plants</h1>
+<p id="label"></p>
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
@@ -131,11 +165,12 @@ var plants = {},
   currentYear = startYear;
 
 var width = 1000,
-    height = 480;
+    height = 500;
+
 
 var projection = d3.geo.albersUsa()
-	.scale(1000)
-	.translate( [width/2,height/2] );
+	.scale(1009)
+	.translate( [width/2, height/2] );
 
 var path = d3.geo.path()
 	.projection(projection);
@@ -230,7 +265,7 @@ function ready(error, us, sequence, first) {
 						});
 
 
-						d3.select("#year").html(currentYear);
+						d3.select("#label").html(currentYear);
 
 
 		}
@@ -262,7 +297,7 @@ function ready(error, us, sequence, first) {
 
 		var legend = svg.append("g")
 									.attr("id","legend")
-									.attr("transform", "translate(" + (width - 210) + "," + (height - 145) + ")");
+									.attr("transform", "translate(" + (width - 210) + "," + (height - 185) + ")");
 
 		legend.append("circle").attr("class","symbol symbol--gain").attr("r",5).attr("cx",5).attr("cy",10)
 		legend.append("circle").attr("class","symbol symbol--loss").attr("r",5).attr("cx",5).attr("cy",30)
