@@ -171,10 +171,10 @@ g.append( "rect" )
 queue()
     .defer(d3.json, "us.json")
     .defer(d3.csv, "nuclear_data.csv")
-    .defer(d3.csv, "nuc_first.csv")
+    // .defer(d3.csv, "nuc_first.csv")
     .await(ready);
 
-function ready(error, us, sequence, first) {
+function ready(error, us, sequence) {
   if (error) throw error;
 
 	svg.append("path")
