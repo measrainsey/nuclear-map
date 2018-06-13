@@ -97,17 +97,6 @@ div.tooltip {
   height: 45px;
 } */
 
-.legend circle {
-  fill: none;
-  stroke: #ccc;
-}
-
-.legend text {
-  fill: #777;
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
-
 </style>
 <head>
     <link rel="stylesheet" href="css/main.css" />
@@ -171,7 +160,6 @@ g.append( "rect" )
 queue()
     .defer(d3.json, "us.json")
     .defer(d3.csv, "nuclear_data.csv")
-    // .defer(d3.csv, "nuc_first.csv")
     .await(ready);
 
 function ready(error, us, sequence) {
@@ -263,10 +251,18 @@ function ready(error, us, sequence) {
 
 		var legend = svg.append("g")
 									.attr("id","legend")
-									.attr("transform", "translate(" + (width - 215) + "," + (height - 185) + ")");
+									.attr("transform", "translate(" + (width - 240) + "," + (height - 185) + ")");
 
-		legend.append("circle").attr("class","symbol symbol--gain").attr("r",5).attr("cx",5).attr("cy",10)
-		legend.append("circle").attr("class","symbol symbol--loss").attr("r",5).attr("cx",5).attr("cy",30)
+		legend.append("circle")
+					.attr("class","symbol symbol--gain")
+					.attr("r",5)
+					.attr("cx",5)
+					.attr("cy",10)
+		legend.append("circle")
+					.attr("class","symbol symbol--loss")
+					.attr("r",5)
+					.attr("cx",5)
+					.attr("cy",30)
 
 		legend.append("text").text("Capacity added").attr("x",15).attr("y",13);
 		legend.append("text").text("Capacity lost").attr("x",15).attr("y",33);
@@ -275,15 +271,17 @@ function ready(error, us, sequence) {
 	  for ( var i in sizes ){
 			legend.append("circle")
 	      .attr( "r", ( sizes[i] )/70 )
-	      .attr( "cx", 90 + ( sizes[sizes.length-1] )/70 )
-	      .attr( "cy", 2 * ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 )
-	      .attr("vector-effect","non-scaling-stroke");
+	      .attr( "cx", 110 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "cy", 1.5 * ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 )
+	      .attr("vector-effect","non-scaling-stroke")
+				.style("stroke", "#ccc");
 	    legend.append("text")
 	      .text( (sizes[i] / 1000) + "GW" + (i == sizes.length-1 ? "" : "") )
 	      .attr( "text-anchor", "middle" )
-	      .attr( "x", 90 + ( sizes[sizes.length-1] )/70 )
-	      .attr( "y", 2 * ( ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 ) + 5 )
-	      .attr( "dy", 13)
+	      .attr( "x", 110 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "y", 2 * ( ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 ) - 20 )
+	      .attr( "dy", 10)
+				.style("font-size","10px")
 	  }
 
 
