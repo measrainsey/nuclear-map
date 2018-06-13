@@ -251,42 +251,41 @@ function ready(error, us, sequence) {
 
 		var legend = svg.append("g")
 									.attr("id","legend")
-									.attr("transform", "translate(" + (width - 240) + "," + (height - 185) + ")");
+									.attr("transform", "translate(" + (width - 260) + "," + (height - 185) + ")");
 
 		legend.append("circle")
 					.attr("class","symbol symbol--gain")
 					.attr("r",5)
 					.attr("cx",5)
-					.attr("cy",10)
+					.attr("cy",10);
 		legend.append("circle")
 					.attr("class","symbol symbol--loss")
 					.attr("r",5)
 					.attr("cx",5)
-					.attr("cy",30)
+					.attr("cy",30);
 
-		legend.append("text").text("Capacity added").attr("x",15).attr("y",13);
-		legend.append("text").text("Capacity lost").attr("x",15).attr("y",33);
+		legend.append("text").text("Capacity added").attr("x",15).attr("y",13).style("font-size","12px");
+		legend.append("text").text("Capacity lost").attr("x",15).attr("y",33).style("font-size","12px");
+
 
 		var sizes = [ 1000, 3000, 4000 ];
 	  for ( var i in sizes ){
 			legend.append("circle")
 	      .attr( "r", ( sizes[i] )/70 )
-	      .attr( "cx", 110 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "cx", 125 + ( sizes[sizes.length-1] )/70 )
 	      .attr( "cy", 1.5 * ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 )
 	      .attr("vector-effect","non-scaling-stroke")
-				.style("stroke", "#ccc");
+				.style("stroke", "#ccc")
+				.style("fill", "none");
 	    legend.append("text")
 	      .text( (sizes[i] / 1000) + "GW" + (i == sizes.length-1 ? "" : "") )
 	      .attr( "text-anchor", "middle" )
-	      .attr( "x", 110 + ( sizes[sizes.length-1] )/70 )
+	      .attr( "x", 125 + ( sizes[sizes.length-1] )/70 )
 	      .attr( "y", 2 * ( ( sizes[sizes.length-1] )/70 - ( sizes[i] )/70 ) - 20 )
 	      .attr( "dy", 10)
-				.style("font-size","10px")
+				.style("font-size","10px");
 	  }
 
-
 	  }
-
-
 
 </script>
