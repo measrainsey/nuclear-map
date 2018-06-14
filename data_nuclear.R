@@ -23,12 +23,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # read in operating generators -------
 
-  list_cols = list(c(3:4,7,11,14:16,48:49),
-                   c(3:4,7,11,14:16,48:49),
-                   c(3:4,7,17,25:28,33),
-                   c(3:4,7,18,26:29,34),
-                   c(3:4,7,18,26:29,34),
-                   c(3:4,7,18,26:29,34)
+  list_cols = list(c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,15,25:28,33),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "ret_month", "ret_year"),
@@ -77,12 +77,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # read in retired generators -------
 
-  list_cols = list(c(3:4,7,11,14:18),
-                   c(3:4,7,11,14:16,48:49),
-                   c(3:4,7,17,25:28,33),
-                   c(3:4,7,18,26:29,34),
-                   c(3:4,7,18,26:29,34),
-                   c(3:4,7,18,26:29,34)
+  list_cols = list(c(3:4,7,10,14:18),
+                   c(3:4,7,10,14:16,48:49),
+                   c(3:4,7,15,25:28,33),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34),
+                   c(3:4,7,16,26:29,34)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
@@ -152,12 +152,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # add planned installments listed in eia 860 (up to 2016) ------
 
-  list_cols = list(c(3:4,7,12,14:15,18),
-                   c(3:4,7,12,14:15,18),
-                   c(3:4,7,17,21:22,28),
-                   c(3:4,7,18,21:22,29),
-                   c(3:4,7,18,21:22,29),
-                   c(3:4,7,18,21:22,29)
+  list_cols = list(c(3:4,7,11,14:15,18),
+                   c(3:4,7,11,14:15,18),
+                   c(3:4,7,15,21:22,28),
+                   c(3:4,7,16,21:22,29),
+                   c(3:4,7,16,21:22,29),
+                   c(3:4,7,16,21:22,29)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
@@ -245,9 +245,11 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   
   colnames(ret_planned_2) = c("ret_year", "plant_name", "plant_code", "gen_id", "capacity", "technology")
   
-  ret_planned_2 = ret_planned_2[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
+  ret_planned_2 = ret_planned_2[, c("plant_code", "plant_name", "gen_id", "ret_year")]
   
   ret_planned_2 = ret_planned_2[!ret_planned, on = "plant_code"]
+  ret_planned_2 = ret_planned_2[op_current[, c("plant_code", "capacity")], on = "plant_code", nomatch = 0]
+  
   setcolorder(ret_planned_2, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year"))
   
   ret_planned = rbindlist(list(ret_planned, ret_planned_2))
@@ -528,28 +530,23 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   dt_2027 = dt_2027[order(abs(cum_capacity))]
   dt_2027[, order := 1:67]
 
-  dt_2027[ plant_name == "Limerick", order := 6]
-  dt_2027[ plant_name == "Oyster Creek", order := 51]
-  
-  # dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
-  # dt_2027[ plant_name == "Kewaunee", order := 28]
-  # 
-  # dt_2027[ plant_name == "James A Fitzpatrick", order := 40]
-  # dt_2027[ plant_name == "R E Ginna Nuclear Power Plant", order := 13]
-  # dt_2027[ plant_name == "Nine Mile Point Nuclear Station", order := 6]
-  # 
-  # dt_2027[ plant_name == "Pilgrim Nuclear Power Station", order := 26]
-  # dt_2027[ plant_name == "Millstone", order := 7]
-  # dt_2027[ plant_name == "Seabrook", order := 46]
+  dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
+  dt_2027[ plant_name == "Kewaunee", order := 28]
+
+  dt_2027[ plant_name == "James A Fitzpatrick", order := 40]
+  dt_2027[ plant_name == "R E Ginna Nuclear Power Plant", order := 13]
+  dt_2027[ plant_name == "Nine Mile Point Nuclear Station", order := 6]
+
+  dt_2027[ plant_name == "Pilgrim Nuclear Power Station", order := 26]
+  dt_2027[ plant_name == "Millstone", order := 7]
+  dt_2027[ plant_name == "Seabrook", order := 46]
 
   dt_sequence = dt_sequence[dt_2027[, c("plant_code", "order")], on = "plant_code"]
-  # dt_sequence = dt_sequence[order(abs(cum_capacity))] 
-
 
 # export data ------
 
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data_4.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_6.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
