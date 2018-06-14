@@ -23,12 +23,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # read in operating generators -------
 
-  list_cols = list(c(3:4,7,10,14:16,48:49),
-                   c(3:4,7,10,14:16,48:49),
-                   c(3:4,7,15,25:28,33),
-                   c(3:4,7,16,26:29,34),
-                   c(3:4,7,16,26:29,34),
-                   c(3:4,7,16,26:29,34)
+  list_cols = list(c(3:4,7,11,14:16,48:49),
+                   c(3:4,7,11,14:16,48:49),
+                   c(3:4,7,17,25:28,33),
+                   c(3:4,7,18,26:29,34),
+                   c(3:4,7,18,26:29,34),
+                   c(3:4,7,18,26:29,34)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "ret_month", "ret_year"),
@@ -55,27 +55,34 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     gen.temp = gen.temp[ energy_source == "NUC" ]
 
     gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    gen.temp[, year := years[i]]
+    
+    setcolorder(gen.temp,
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source", "year"))
+    
 
     list_op[[i]] = gen.temp
 
-    setcolorder(gen.temp,
-                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
 
     rm(gen.temp)
 
   }
 
   op_all = rbindlist(list_op)
+  op_all = op_all[ , .SD[which.max(year)], by = c("plant_code", "plant_name", "gen_id",
+                                                  "op_month", "op_year", "ret_month", "ret_year", "energy_source")]
+  # op_all = op_all[, c("plant_code", "plant_name", "gen_id", "capacity", 
+  #                     "op_month", "op_year", "ret_month", "ret_year", "energy_source")]
 
 
 # read in retired generators -------
 
-  list_cols = list(c(3:4,7,10,14:18),
-                   c(3:4,7,10,14:16,48:49),
-                   c(3:4,7,15,25:28,33),
-                   c(3:4,7,16,26:29,34),
-                   c(3:4,7,16,26:29,34),
-                   c(3:4,7,16,26:29,34)
+  list_cols = list(c(3:4,7,11,14:18),
+                   c(3:4,7,11,14:16,48:49),
+                   c(3:4,7,17,25:28,33),
+                   c(3:4,7,18,26:29,34),
+                   c(3:4,7,18,26:29,34),
+                   c(3:4,7,18,26:29,34)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"),
@@ -104,12 +111,14 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     gen.temp = gen.temp[ energy_source == "NUC" ]
 
     gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    gen.temp[, year := years[i]]
+    
+    setcolorder(gen.temp,
+                c("plant_code", "plant_name", "gen_id", "capacity", 
+                  "op_month", "op_year", "ret_month", "ret_year", "energy_source", "year"))
 
     list_ret[[i]] = gen.temp
-
-    setcolorder(gen.temp,
-                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "ret_month", "ret_year", "energy_source"))
-
+    
     rm(gen.temp)
 
   }
@@ -118,17 +127,24 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   ret_2016 = unique(ret_2016)
 
 # filter out retirements up to 2018 ------
+  
+  setcolorder(op_all, colnames(ret_2016))
 
   ret_2018 = op_all[ ret_year <= 2018 ]
 
   ret_current = rbindlist(list(ret_2016, ret_2018))
   ret_current = unique(ret_current)
   ret_current = ret_current[!is.na(ret_year)]
+  
+  ret_current = ret_current[ , .SD[which.max(year)], by = c("plant_code", "plant_name", "gen_id",
+                                                            "op_month", "op_year", "ret_month", "ret_year", "energy_source")]
+  
+  setcolorder(ret_current, c("plant_code", "plant_name", "gen_id", "capacity", 
+                             "op_month", "op_year", "ret_month", "ret_year", "energy_source", "year"))
 
 # remove retired generators from operating generators -----
 
   op_current = op_all[!ret_2018, on = c("plant_code", "gen_id")]
-
 
 # filter out planned retirements ------
 
@@ -136,12 +152,12 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # add planned installments listed in eia 860 (up to 2016) ------
 
-  list_cols = list(c(3:4,7,10,14:15,18),
-                   c(3:4,7,10,14:15,18),
-                   c(3:4,7,16,21:22,28),
-                   c(3:4,7,16,21:22,29),
-                   c(3:4,7,16,21:22,29),
-                   c(3:4,7,16,21:22,29)
+  list_cols = list(c(3:4,7,12,14:15,18),
+                   c(3:4,7,12,14:15,18),
+                   c(3:4,7,17,21:22,28),
+                   c(3:4,7,18,21:22,29),
+                   c(3:4,7,18,21:22,29),
+                   c(3:4,7,18,21:22,29)
   )
 
   list_names = list(c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"),
@@ -170,12 +186,13 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     gen.temp = gen.temp[ energy_source == "NUC" ]
 
     gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
+    gen.temp[, year := years[i]]
+    
+    setcolorder(gen.temp,
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "year"))
 
     list_prop[[i]] = gen.temp
-
-    setcolorder(gen.temp,
-                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"))
-
+    
     rm(gen.temp)
 
   }
@@ -215,8 +232,10 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # get only unique retiring units -------
 
-  ret_planned = ret_planned[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
+  ret_planned = ret_planned[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year", "year")]
+  ret_planned = ret_planned[ , .SD[which.max(year)], by = c("plant_code", "plant_name", "gen_id", "ret_year")]
   ret_planned = unique(ret_planned)
+  ret_planned = ret_planned[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
   
 # add more recent nuclear retirements from EIA power monthly ------
   
@@ -227,6 +246,8 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   colnames(ret_planned_2) = c("ret_year", "plant_name", "plant_code", "gen_id", "capacity", "technology")
   
   ret_planned_2 = ret_planned_2[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
+  
+  ret_planned_2 = ret_planned_2[!ret_planned, on = "plant_code"]
   setcolorder(ret_planned_2, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year"))
   
   ret_planned = rbindlist(list(ret_planned, ret_planned_2))
@@ -331,7 +352,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
   ret_planned = melt(ret_planned, measure.vars = c("op_year", "ret_year"),
                      variable.name = "category", value.name = "year")
-
+  ret_planned[, capacity := as.numeric(capacity)]
   ret_planned[category == "ret_year", capacity := -capacity]
 
   ret_current = melt(ret_current[, c("plant_code", "plant_name", "gen_id", "capacity", "op_year", "ret_year",
@@ -366,6 +387,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
   for (i in 1:nrow(dt.un)) {
     dt.temp = ret_current[plant_code == dt.un[, plant_code][i]]
+    dt.temp[, year := as.integer(year)]
     first.temp = dt_first[plant_code == dt.un[, plant_code][i]]
     dt.temp = dt.temp[dt.years, on = "year"]
     # dt.temp = dt.temp[ year >= first.temp[, op_year]]
@@ -413,6 +435,7 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
   for (i in 1:nrow(dt.un)) {
     dt.temp = ret_planned[plant_code == dt.un[, plant_code][i]]
+    dt.temp[, year := as.numeric(year)]
     first.temp = dt_first[plant_code == dt.un[, plant_code][i]]
     dt.temp = dt.temp[dt.years, on = "year"]
     # dt.temp = dt.temp[ year >= first.temp[, op_year]]
@@ -524,5 +547,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_2.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
