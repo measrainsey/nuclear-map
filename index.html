@@ -121,13 +121,13 @@ var plants = {},
 	endYear = 2027,
   currentYear = startYear;
 
-// var width = 1100,
-//     height = 500;
-var width = window.innerWidth-100, // (1)
+// var width = 1200,
+//     height = 550;
+var width = window.innerWidth-100,
   height = window.innerHeight-100;
 
 var projection = d3.geo.albersUsa()
-	.scale(1010)
+	.scale(1110)
 	.translate( [width/2, height/2-20] );
 
 var path = d3.geo.path()
@@ -159,7 +159,7 @@ g.append( "rect" )
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuclear_data.csv")
+    .defer(d3.csv, "nuclear_data_4.csv")
     .await(ready);
 
 function ready(error, us, sequence) {
