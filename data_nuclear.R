@@ -527,16 +527,20 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   dt_2027 = dt_sequence[ year == 2027 ]
   dt_2027 = dt_2027[order(abs(cum_capacity))]
   dt_2027[, order := 1:67]
-  dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
-  dt_2027[ plant_name == "Kewaunee", order := 28]
+
+  dt_2027[ plant_name == "Limerick", order := 6]
+  dt_2027[ plant_name == "Oyster Creek", order := 51]
   
-  dt_2027[ plant_name == "James A Fitzpatrick", order := 40]
-  dt_2027[ plant_name == "R E Ginna Nuclear Power Plant", order := 13]
-  dt_2027[ plant_name == "Nine Mile Point Nuclear Station", order := 6]
-  
-  dt_2027[ plant_name == "Pilgrim Nuclear Power Station", order := 26]
-  dt_2027[ plant_name == "Millstone", order := 7]
-  dt_2027[ plant_name == "Seabrook", order := 46]
+  # dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
+  # dt_2027[ plant_name == "Kewaunee", order := 28]
+  # 
+  # dt_2027[ plant_name == "James A Fitzpatrick", order := 40]
+  # dt_2027[ plant_name == "R E Ginna Nuclear Power Plant", order := 13]
+  # dt_2027[ plant_name == "Nine Mile Point Nuclear Station", order := 6]
+  # 
+  # dt_2027[ plant_name == "Pilgrim Nuclear Power Station", order := 26]
+  # dt_2027[ plant_name == "Millstone", order := 7]
+  # dt_2027[ plant_name == "Seabrook", order := 46]
 
   dt_sequence = dt_sequence[dt_2027[, c("plant_code", "order")], on = "plant_code"]
   # dt_sequence = dt_sequence[order(abs(cum_capacity))] 
@@ -547,5 +551,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data_2.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_4.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
