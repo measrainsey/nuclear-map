@@ -3,8 +3,9 @@ gen.fil   = c('GeneratorY2011.xlsx', 'GeneratorY2012.xlsx', '3_1_Generator_Y2013
               '3_1_Generator_Y2014.xlsx', '3_1_Generator_Y2015.xlsx', '3_1_Generator_Y2016.xlsx')
 plt.fil   = c('Plant.xlsx', 'PlantY2012.xlsx', '2___Plant_Y2013.xlsx',
               '2___Plant_Y2014.xlsx', '2___Plant_Y2015.xlsx', '2___Plant_Y2016.xlsx')
-add.dir   = '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/february2018'
+add.dir   = '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/april2018'
 add.fil   = 'Table_6_05.xlsx'
+ret.fil   = 'Table_6_06.xlsx'
 out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # ------------------------------------------------------------------------------------
@@ -215,6 +216,20 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 # get only unique retiring units -------
 
   ret_planned = ret_planned[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
+  ret_planned = unique(ret_planned)
+  
+# add more recent nuclear retirements from EIA power monthly ------
+  
+  setwd(add.dir)
+  
+  ret_planned_2 = as.data.table(read.xlsx(ret.fil, startRow = 2, cols = c(1,6,8:9,10:11,15)))[ Technology == "Nuclear" ]
+  
+  colnames(ret_planned_2) = c("ret_year", "plant_name", "plant_code", "gen_id", "capacity", "technology")
+  
+  ret_planned_2 = ret_planned_2[, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year")]
+  setcolorder(ret_planned_2, c("plant_code", "plant_name", "gen_id", "capacity", "ret_year"))
+  
+  ret_planned = rbindlist(list(ret_planned, ret_planned_2))
   ret_planned = unique(ret_planned)
 
 # change retirements to negative ------
