@@ -84,9 +84,19 @@ div.tooltip {
   margin: 0;
 }
 
+#source{
+  color: #999;
+  font-size: 12px;
+	position: relative;
+	text-align: center;
+	/* margin-left: 60px;
+  margin-top: 20px; */
+}
+
 #slider {
   position: relative;
 	text-align: center;
+	padding-bottom: 10px;
 }
 
 /* #slider {
@@ -97,6 +107,7 @@ div.tooltip {
   height: 45px;
 } */
 
+
 </style>
 <head>
     <link rel="stylesheet" href="css/main.css" />
@@ -104,12 +115,13 @@ div.tooltip {
 </head>
 <body>
 <!-- <h1>U.S. Nuclear Generation in <span id="year">1968</span></h1> -->
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 <h1>The History and Future of U.S. Nuclear Power Plants</h1>
+<p id="source">Source: U.S. Energy Information Administration</p>
 <!-- <p id="label"></p> -->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
 <script src="//d3js.org/queue.v1.min.js"></script>
-<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 <script src="chroniton.js"></script>
 <link href="chroniton.css" rel="stylesheet">
 <div id="slider"></div>
