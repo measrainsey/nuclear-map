@@ -550,7 +550,10 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   dt_2027 = dt_sequence[ year == 2027 ]
   dt_2027 = dt_2027[order(abs(cum_capacity))]
   dt_2027[, order := 1:67]
-
+  
+  dt_2027[ plant_name == "Duane Arnold Energy Center", order := 43]
+  dt_2027[ plant_name == "Quad Cities Generating Station", order := 8]
+  
   dt_2027[ plant_name == "Point Beach Nuclear Plant", order := 3]
   dt_2027[ plant_name == "Kewaunee", order := 28]
 
@@ -569,5 +572,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data_7.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_8.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
