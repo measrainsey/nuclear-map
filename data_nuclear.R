@@ -3,7 +3,8 @@ gen.fil   = c('GeneratorY2011.xlsx', 'GeneratorY2012.xlsx', '3_1_Generator_Y2013
               '3_1_Generator_Y2014.xlsx', '3_1_Generator_Y2015.xlsx', '3_1_Generator_Y2016.xlsx')
 plt.fil   = c('Plant.xlsx', 'PlantY2012.xlsx', '2___Plant_Y2013.xlsx',
               '2___Plant_Y2014.xlsx', '2___Plant_Y2015.xlsx', '2___Plant_Y2016.xlsx')
-add.dir   = '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/april2018'
+add.dir   = c('/Users/MEAS/Google Drive/data/eia/electric-power-monthly/february2018', 
+              '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/april2018')
 add.fil   = 'Table_6_05.xlsx'
 ret.fil   = 'Table_6_06.xlsx'
 out.dir   = '/Users/MEAS/GitHub/nuclear-map'
@@ -186,10 +187,10 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
     gen.temp = gen.temp[ energy_source == "NUC" ]
 
     gen.temp[, (ncols) := lapply(.SD, as.numeric), .SDcols = ncols ]
-    gen.temp[, year := years[i]]
+    # gen.temp[, year := years[i]]
     
     setcolorder(gen.temp,
-                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source", "year"))
+                c("plant_code", "plant_name", "gen_id", "capacity", "op_month", "op_year", "energy_source"))
 
     list_prop[[i]] = gen.temp
     
@@ -203,12 +204,23 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
 
 # add planned installments (more recent) ------
 
-  setwd(add.dir)
-
-  op_planned = as.data.table(read.xlsx(add.fil, startRow = 2, cols = c(1,6,8:9,11,15)))[ Technology == "Nuclear" ]
-
-  colnames(op_planned) = c("op_year", "plant_name", "plant_code", "gen_id", "technology", "capacity")
-
+  list_op_planned = list()
+  
+  for (i in 1:length(add.dir)) {
+    setwd(add.dir[i])
+    
+    dt.temp = as.data.table(read.xlsx(add.fil, startRow = 2, cols = c(1,6,8:9,11,15)))[ Technology == "Nuclear" ]
+    colnames(dt.temp) = c("op_year", "plant_name", "plant_code", "gen_id", "technology", "capacity")
+    
+    list_op_planned[[i]] = dt.temp
+    
+    rm(dt.temp)
+    
+  }
+  
+  op_planned = rbindlist(list_op_planned)
+  op_planned = unique(op_planned)
+    
   prop_2016 = prop_2016[!op_planned, on = c("plant_code", "gen_id")] # all remaining planned generators in this dataset were cancelled
   op_planned = op_planned[, c("plant_code", "plant_name", "gen_id", "capacity", "op_year")]
 
@@ -239,14 +251,23 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   
 # add more recent nuclear retirements from EIA power monthly ------
   
-  setwd(add.dir)
+  list_ret_planned_2 = list()
   
-  ret_planned_2 = as.data.table(read.xlsx(ret.fil, startRow = 2, cols = c(1,6,8:9,10:11,15)))[ Technology == "Nuclear" ]
+  for (i in 1:length(add.dir)) {
+    setwd(add.dir[i])
+    
+    dt.temp = as.data.table(read.xlsx(ret.fil, startRow = 2, cols = c(1,6,8:9,10:11,15)))[ Technology == "Nuclear" ]
+    colnames(dt.temp) = c("ret_year", "plant_name", "plant_code", "gen_id", "capacity", "technology")
+    
+    list_ret_planned_2[[i]] = dt.temp
+    
+    rm(dt.temp)
+    
+  }
   
-  colnames(ret_planned_2) = c("ret_year", "plant_name", "plant_code", "gen_id", "capacity", "technology")
-  
+  ret_planned_2 = rbindlist(list_ret_planned_2)
+  ret_planned_2 = unique(ret_planned_2)
   ret_planned_2 = ret_planned_2[, c("plant_code", "plant_name", "gen_id", "ret_year")]
-  
   ret_planned_2 = ret_planned_2[!ret_planned, on = "plant_code"]
   ret_planned_2 = ret_planned_2[op_current[, c("plant_code", "capacity")], on = "plant_code", nomatch = 0]
   
@@ -548,5 +569,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data_6.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_7.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
