@@ -4,7 +4,9 @@ gen.fil   = c('GeneratorY2011.xlsx', 'GeneratorY2012.xlsx', '3_1_Generator_Y2013
 plt.fil   = c('Plant.xlsx', 'PlantY2012.xlsx', '2___Plant_Y2013.xlsx',
               '2___Plant_Y2014.xlsx', '2___Plant_Y2015.xlsx', '2___Plant_Y2016.xlsx')
 add.dir   = c('/Users/MEAS/Google Drive/data/eia/electric-power-monthly/february2018', 
-              '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/april2018')
+              '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/april2018',
+              '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/may2018',
+              '/Users/MEAS/Google Drive/data/eia/electric-power-monthly/june2018')
 add.fil   = 'Table_6_05.xlsx'
 ret.fil   = 'Table_6_06.xlsx'
 out.dir   = '/Users/MEAS/GitHub/nuclear-map'
@@ -572,5 +574,5 @@ out.dir   = '/Users/MEAS/GitHub/nuclear-map'
   setwd(out.dir)
 
   # fwrite(dt_first, "nuc_first.csv", row.names = FALSE)
-  fwrite(dt_sequence, "nuclear_data_8.csv", row.names = FALSE)
+  fwrite(dt_sequence, "nuclear_data_20180809.csv", row.names = FALSE)
   # fwrite(dt_sequence[year == 2018], "nuc_2018.csv", row.names = FALSE)
