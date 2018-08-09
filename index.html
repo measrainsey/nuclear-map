@@ -117,7 +117,7 @@ div.tooltip {
 <!-- <h1>U.S. Nuclear Generation in <span id="year">1968</span></h1> -->
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 <h1>The History and Future of U.S. Nuclear Power Plants</h1>
-<p id="source">Source: U.S. Energy Information Administration</p>
+<!-- <p id="source">Source: U.S. Energy Information Administration</p> -->
 <!-- <p id="label"></p> -->
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script src="//d3js.org/topojson.v1.min.js"></script>
@@ -171,7 +171,7 @@ g.append( "rect" )
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuclear_data_8.csv")
+    .defer(d3.csv, "nuclear_data_20180809.csv")
     .await(ready);
 
 function ready(error, us, sequence) {
