@@ -171,7 +171,7 @@ g.append( "rect" )
 
 queue()
     .defer(d3.json, "us.json")
-    .defer(d3.csv, "nuclear_data_20180809.csv")
+    .defer(d3.csv, "nuclear_capacity.csv")
     .await(ready);
 
 function ready(error, us, sequence) {
@@ -198,12 +198,12 @@ function ready(error, us, sequence) {
 						.transition()
 						.ease("linear")
 						.duration(500)
-						.attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
+						.attr("class", function(d) { return "symbol symbol--" + (d.net_capacity < 0 ? "loss" : "gain"); })
 						// .attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
 						.attr("r", radius );
 			} else {
 				circle
-					.attr("class", function(d) { return "symbol symbol--" + (d.cum_capacity < 0 ? "loss" : "gain"); })
+					.attr("class", function(d) { return "symbol symbol--" + (d.net_capacity < 0 ? "loss" : "gain"); })
 					// .attr("r", function(d) { return Math.abs(d.cum_capacity)/70;} );
 					.attr("r", radius );
 			}
@@ -221,7 +221,7 @@ function ready(error, us, sequence) {
 								.duration(200)
 								.style("opacity", .9);
 						div.html("<strong>" + d.plant_name + "</strong><br/>" +
-						(d.cum_capacity < 0 ? Math.abs(d.cum_capacity) + " MW lost" + "<br/>" + Math.abs( d.net_capacity ) + " MW operating"  : Math.abs( d.cum_capacity ) + " MW operating") +
+						(d.net_capacity < 0 ? Math.abs(d.net_capacity) + " MW lost" + "<br/>" + Math.abs( d.net_capacity ) + " MW operating"  : Math.abs( d.op_capacity ) + " MW operating") +
 						"<br/>" + d.city + ", " + d.state)
 
 				 })
